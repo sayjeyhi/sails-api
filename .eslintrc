@@ -1,0 +1,58 @@
+{
+    "extends": "adpyke-es6",
+    "parser": "babel-eslint",
+    "globals": {
+        "_": true,
+        "ResponseHandler": true,
+        "ErrorHandler": true,
+        "MessageHelper": true,
+        "JwtService": true,
+        "MailService": true,
+        "UploadService": true,
+        "HistoryService": true,
+        "BeforeCreate": true,
+        "App": true,
+        "Board": true,
+        "Item": true,
+        "Meta": true,
+        "Attachment": true,
+        "Member": true,
+        "Json": true,
+        "User": true,
+        "require": true,
+        "sails": true,
+        "async": true,
+        "module": true
+    },
+    "rules": {
+        "no-empty-function": [
+            "error",
+            {
+                "allow": [
+                    "arrowFunctions"
+                ]
+            }
+        ],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1,
+                "MemberExpression": 1
+            }
+        ],
+        "space-before-function-paren":[
+            "error" , {
+                "anonymous": "never",
+                "named": "never",
+                "asyncArrow": "never"
+            }
+        ],
+        "space-before-blocks":"off",
+        "key-spacing": [
+            "error" , {
+                "align": "colon"
+            }
+        ]
+    }
+}
