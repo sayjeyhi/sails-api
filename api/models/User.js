@@ -33,12 +33,29 @@ module.exports = {
             collection: 'userPersonal',
             via       : 'user'
         },
+        // user information
+        alcohol: {
+            collection: 'userAlcohol',
+            via       : 'user'
+        },
         allergies: {
             collection: 'userAllergies',
             via       : 'user'
         },
+        disease: {
+            collection: 'userDisease',
+            via       : 'user'
+        },
+        exercise: {
+            collection: 'userExercise',
+            via       : 'user'
+        },
         medications: {
             collection: 'userMedications',
+            via       : 'user'
+        },
+        smoke: {
+            collection: 'userSmoke',
             via       : 'user'
         }
     },
