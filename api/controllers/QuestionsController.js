@@ -32,9 +32,10 @@ module.exports = {
      * @param res
      * @returns {Promise.<void>}
      */
-    async getCategory(req, res) {
+    async doAnswer(req, res) {
         const allowedParameters = [
-            'id'
+            'question',
+            'answer'
         ];
 
         const data = _.pick(req.allParams(), allowedParameters);

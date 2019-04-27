@@ -14,6 +14,7 @@ module.exports = {
             type      : 'boolean',
             defaultsTo: false
         },
+
         // Add a reference to steps
         doings: {
             collection: 'steps',
