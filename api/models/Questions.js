@@ -13,15 +13,13 @@ module.exports = {
         inGroup: {
             type: 'string'
         },
-
         // Add a reference to answers
         answers: {
             collection: 'answers',
             via       : 'question'
         },
-        subQuestions: {
-            collection: 'subquestions',
-            via       : 'question'
+        sub_question: {
+            type: 'string'
         }
     }
 };
