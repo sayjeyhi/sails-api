@@ -43,7 +43,7 @@ module.exports = {
             via       : 'user'
         },
         disease: {
-            collection: 'userDisease',
+            collection: 'userDiseaseHistory',
             via       : 'user'
         },
         exercise: {

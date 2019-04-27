@@ -21,7 +21,8 @@ module.exports = {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },
-        cigar: {   // سیگار برگ
+        // سیگار برگ
+        cigar: {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },

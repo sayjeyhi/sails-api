@@ -13,6 +13,9 @@ module.exports = {
         level: {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
+        },
+        user: {
+            model: 'user'
         }
     }
 };
