@@ -19,7 +19,6 @@ module.exports = {
         const dataGettered = await Questions
             .find(data)
             .populate('answers')
-            .populate('categories')
             .catch(err => res.json(ErrorHandler(0, err.message)));
 
         return res.json(

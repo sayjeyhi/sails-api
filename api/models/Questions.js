@@ -13,6 +13,9 @@ module.exports = {
         inGroup: {
             type: 'string'
         },
+        kind: {
+            type: 'string'
+        },
         // Add a reference to answers
         answers: {
             collection: 'answers',
