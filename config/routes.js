@@ -29,7 +29,6 @@ module.exports.routes = {
 
 
     // for history
-    'GET /category' : 'QuestionsController.getCategory',
     'GET /questions': 'QuestionsController.getQuestions',
 
 

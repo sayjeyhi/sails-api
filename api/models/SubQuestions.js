@@ -19,9 +19,8 @@ module.exports = {
             collection: 'answers',
             via       : 'question'
         },
-        subQuestions: {
-            collection: 'subquestions',
-            via       : 'question'
+        question: {
+            model: 'Questions'
         }
     }
 };
