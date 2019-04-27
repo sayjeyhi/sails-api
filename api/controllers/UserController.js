@@ -10,7 +10,6 @@ const jwtSecret = sails.config.secrets.jwtSecret;
 
 
 module.exports = {
-
     /**
      * Register new user
      * @param req
@@ -38,7 +37,9 @@ module.exports = {
             token: JwtService.issue({ id: createdUser.id })
         };
 
-        return res.json(ResponseHandler(responseData));
+        return res.json(
+            ResponseHandler(responseData)
+        );
     },
     /**
      * Init user app
@@ -53,21 +54,27 @@ module.exports = {
                 token = token.slice(7, token.length);
             }
 
+            /**
+             * Verify user jwt token and grab user
+             */
             await verify(
                 token,
                 jwtSecret,
-                (err, data) => {
-                    const grabbedUser = User
+                async(err, data) => {
+                    const grabbedUser = await User
                         .findOne({
                             id: data.id
-                        })
-                        .fetch();
+                        });
 
-                    res ? res.json(ResponseHandler({ ...grabbedUser })) : 'wrong jwt token';
+                    res ? res.json(
+                        ResponseHandler({ ...grabbedUser })
+                    ) : 'wrong jwt token';
                 }
             );
         } else {
-            return res ? res.send(ErrorHandler(1002)) : 'NoToken';
+            return res ? res.send(
+                ErrorHandler(1002)
+            ) : 'NoToken';
         }
     }
 
