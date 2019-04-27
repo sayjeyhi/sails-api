@@ -4,7 +4,6 @@
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
-
 const bcrypt = require('bcrypt-nodejs');
 
 module.exports = {
@@ -23,8 +22,8 @@ module.exports = {
             unique: true
         },
         email: {
-            type    : 'string',
-            unique  : true
+            type  : 'string',
+            unique: true
         },
         basicInfo: {
             collection: 'userBasicInfo',

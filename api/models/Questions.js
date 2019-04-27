@@ -18,11 +18,12 @@ module.exports = {
         },
         // Add a reference to answers
         answers: {
-            collection: 'answers',
-            via       : 'question'
+            type      : 'json',
+            columnType: 'array'
         },
         sub_question: {
-            type: 'string'
+            type      : 'json',
+            columnType: 'array'
         }
     }
 };
