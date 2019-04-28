@@ -65,7 +65,6 @@ module.exports.bootstrap = async function() {
         console.log(`Questions created : ${out.title}`);
     });
 
-
     await Questions.create({
         behaviorType: 'Alcohol',
         kind        : 'button',

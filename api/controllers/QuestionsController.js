@@ -130,15 +130,21 @@ module.exports = {
             );
         }
 
-        const userInfo = User.find({
-            username: data.username
-        }).populate(modelCaller);
+        // const userInfo = User.find({
+        //     username: data.username
+        // }).populate(modelCaller);
 
-        let gatteredDate;
-        const hasData = user[modelCaller].length > 0;
-        const operation = hasData ? 'update' : 'create';
+        let gatheredDate;
         const dataToHandle = { user: userInfo.id };
 
+
+        /**
+         * This flag will handle answering or updating answer in 24 hours
+         * @type {boolean}
+         */
+        let couldAnswer = true;
+        let lastRecord;
+        const currentDateTimeStamp = new Date().getTime();
 
         /**
          * Check behavior type
@@ -150,35 +156,78 @@ module.exports = {
                     dataToHandle[behaviorTypeChild] = data.answer;
                 }
 
-                const lastRecord = UserAlcohol.getLastOne();
-                let lastAddTime;
-                if(lastRecord) {
-
+                // get last user_alcohol
+                lastRecord = await UserAlcohol.getLastOne();
+                if (lastRecord) {
+                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
+                    couldAnswer = ((lastAddTime - currentDateTimeStamp) > (24 * 3600));
                 }
-                gatteredDate = UserAlcohol.insert(
-                    dataToHandle
-                );
+
+                gatheredDate = await this.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Smoke':
                 dataToHandle.isSmoking = true;
                 if (forSubQuestion) {
                     dataToHandle[behaviorTypeChild] = data.answer;
                 }
-                gatteredDate = UserSmoke[operation](
-                    dataToHandle
-                );
+
+                // get last user_smoke
+                lastRecord = await UserSmoke.getLastOne();
+                if (lastRecord) {
+                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
+                    couldAnswer = ((lastAddTime - currentDateTimeStamp) > (24 * 3600));
+                }
+
+                gatheredDate = await this.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Diet':
-
+                const userSelectedCheckBoxes = data.answer.split(',');
+                dataToHandle.level = userSelectedCheckBoxes.length;
+                userSelectedCheckBoxes.forEach(selected => {
+                    dataToHandle[selected] = true;
+                });
                 break;
             case 'Exercise':
-
+                dataToHandle.level = data.answer;
                 break;
         }
 
 
         return res.json(
-            ResponseHandler(gatteredDate)
+            ResponseHandler(gatheredDate)
         );
+    },
+
+
+    // private methods
+
+    /**
+     * Insert or update user alcohol data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserAlcohol(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = UserAlcohol
+                .insert(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = UserAlcohol
+                .updateOne(
+                    dataToHandle
+                )
+                .where({
+                    id: lastRecord.id
+                })
+                .fetch();
+        }
+
+        return gatheredDate;
     }
 };

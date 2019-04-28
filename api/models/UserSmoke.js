@@ -22,7 +22,7 @@ module.exports = {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },
-        other: {
+        others: {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },
