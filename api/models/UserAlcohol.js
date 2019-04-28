@@ -35,5 +35,34 @@ module.exports = {
             ));
 
         return lastRow;
+    },
+
+    /**
+     * Insert or update user alcohol data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserAlcohol(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = await UserAlcohol
+                .create(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = await UserAlcohol
+                .updateOne({
+                    id: lastRecord.id
+                })
+                .where(
+                    dataToHandle
+                );
+        }
+
+        return gatheredDate;
     }
 };

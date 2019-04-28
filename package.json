@@ -30,6 +30,7 @@
     },
     "devDependencies": {
         "@sailshq/eslint": "^4.19.3",
+        "babel-eslint": "^10.0.1",
         "cross-env": "5.2.0",
         "eclint": "^2.8.1",
         "eslint": "5.11.0",

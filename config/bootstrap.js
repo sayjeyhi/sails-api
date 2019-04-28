@@ -65,7 +65,6 @@ module.exports.bootstrap = async function() {
         console.log(`Questions created : ${out.title}`);
     });
 
-
     await Questions.create({
         behaviorType: 'Alcohol',
         kind        : 'button',
@@ -153,7 +152,7 @@ module.exports.bootstrap = async function() {
 
     await Questions.create({
         behaviorType: 'Smoke',
-        kind        : 'checkbox',
+        kind        : 'radio',
         title       : 'آیا مصرف روزانه دخانیات دارید؟',
         answers     : [
             {

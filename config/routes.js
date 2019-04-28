@@ -33,12 +33,6 @@ module.exports.routes = {
     'POST /doAnswer': 'QuestionsController.doAnswer',
 
 
-    // for user
-    'GET /panel/userSingle' : 'Panel/UserController.getUser',
-    'POST /panel/userSingle': 'Panel/UserController.update',
-    'POST /panel/userAvatar': 'Panel/UserController.uploadAvatar',
-    'POST /panel/userSearch': 'Panel/UserController.searchUser',
-
     // for socket
     'GET /joinRoom' : 'AppSocket.join',
     'GET /appSocket': 'AppSocket.appChanged',
