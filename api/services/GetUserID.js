@@ -4,9 +4,9 @@
  * @constructor
  */
 const jwtSecret = sails.config.secrets.jwtSecret;
-const {verify} = require('jsonwebtoken');
+const { verify } = require('jsonwebtoken');
 
-const GetUserID = async(req , res) => {
+const GetUserID = async(req, res) => {
     let token = req.headers.authorization;
     if (token) {
         if (token.startsWith('Bearer ')) {
@@ -17,7 +17,12 @@ const GetUserID = async(req , res) => {
             token,
             jwtSecret,
             (err, data) => {
-                return res ? res.json(ResponseHandler({err , data})) : 'wrong jwt token';
+                if (err) {
+                    return res ? res.badRequest(ErrorHandler(0, err)) : ErrorHandler(0, err);
+                }
+                return res ? res.json(
+                    ResponseHandler(data)
+                ) : data;
             }
         );
     } else {

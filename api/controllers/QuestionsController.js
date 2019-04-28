@@ -12,91 +12,92 @@ module.exports = {
      */
     async getQuestions(req, res) {
         const allowedParameters = [
-            'username'
+            'id'
         ];
         const data = _.pick(req.allParams(), allowedParameters);
         const dataGettered = await Questions
             .find();
 
 
-        /**
-         * Fn to check if sth has value
-         */
-        const hasValue = (object, entity, field) => (object[entity] ? (object[entity][field]) : false);
-
-        if (data.username) {
-            const questionsArray = dataGettered.map(question => {
-                let userInfo = {};
-
-                let selectedValue = '';
-                let subQuestionsTemp;
-                /**
-                 * Work on alcohol drinks :)
-                 */
-                if (question.behaviorType === 'Alcohol') {
-                    selectedValue = hasValue(userInfo, 'UserAlcohol', 'doDrink') ? 'yes' : 'no';
-                    subQuestionsTemp = question.sub_questions.map(async sub => {
-                        const subQuestion = { ...sub };
-                        userInfo = await UserAlcohol
-                            .findOne({
-                                user: data.username
-                            })
-                            .fetch()
-                            .catch(err =>
-                                res.badRequest(ErrorHandler(0, err.message)));
-
-                        subQuestion.level = userInfo[sub.behaviorTypeChild];
-
-                        return subQuestion;
-                    });
-                } else if (question.behaviorType === 'Diet') {
-                    /**
-                     * Make questions of user diet
-                     */
-                    question.sub_questions.map(sub => {
-                        subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
-                    });
-                } else if (question.behaviorType === 'Smoke') {
-                    /**
-                     * Create questions for user smoking
-                     */
-
-                    selectedValue = hasValue(userInfo, 'UserSmoke', 'doSmoke') ? 'yes' : 'no';
-                    subQuestionsTemp = question.sub_questions.map(async sub => {
-                        const subQuestion = { ...sub };
-                        userInfo = await UserSmoke
-                            .findOne({
-                                user: data.username
-                            })
-                            .fetch()
-                            .catch(err =>
-                                res.badRequest(ErrorHandler(0, err.message)));
-
-                        subQuestion.level = userInfo[sub.behaviorTypeChild];
-
-                        return subQuestion;
-                    });
-                } else if (question.behaviorType === 'Exercise') {
-                    /**
-                     * Create info to user exercise
-                     */
-                    question.sub_questions.map(sub => {
-                        subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
-                    });
-                }
-
-                question.selectedValue = selectedValue;
-                question.sub_questions = subQuestionsTemp;
-            });
-
-            /**
-             * If we want to filter user info
-             * we gonna return this json
-             */
-            return res.json(
-                ResponseHandler(questionsArray, 'list of questions')
-            );
-        }
+        // /**
+        //  * Fn to check if sth has value
+        //  */
+        // const hasValue = (object, entity, field) => (object[entity] ? (object[entity][field]) : false);
+        //
+        //
+        // if (data.username) {
+        //     const questionsArray = dataGettered.map(question => {
+        //         let userInfo = {};
+        //
+        //         let selectedValue = '';
+        //         let subQuestionsTemp;
+        //         /**
+        //          * Work on alcohol drinks :)
+        //          */
+        //         if (question.behaviorType === 'Alcohol') {
+        //             selectedValue = hasValue(userInfo, 'UserAlcohol', 'doDrink') ? 'yes' : 'no';
+        //             subQuestionsTemp = question.sub_questions.map(async sub => {
+        //                 const subQuestion = { ...sub };
+        //                 userInfo = await UserAlcohol
+        //                     .findOne({
+        //                         user: data.username
+        //                     })
+        //                     .fetch()
+        //                     .catch(err =>
+        //                         res.badRequest(ErrorHandler(0, err.message)));
+        //
+        //                 subQuestion.level = userInfo[sub.behaviorTypeChild];
+        //
+        //                 return subQuestion;
+        //             });
+        //         } else if (question.behaviorType === 'Diet') {
+        //             /**
+        //              * Make questions of user diet
+        //              */
+        //             question.sub_questions.map(sub => {
+        //                 subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
+        //             });
+        //         } else if (question.behaviorType === 'Smoke') {
+        //             /**
+        //              * Create questions for user smoking
+        //              */
+        //
+        //             selectedValue = hasValue(userInfo, 'UserSmoke', 'doSmoke') ? 'yes' : 'no';
+        //             subQuestionsTemp = question.sub_questions.map(async sub => {
+        //                 const subQuestion = { ...sub };
+        //                 userInfo = await UserSmoke
+        //                     .findOne({
+        //                         user: data.username
+        //                     })
+        //                     .fetch()
+        //                     .catch(err =>
+        //                         res.badRequest(ErrorHandler(0, err.message)));
+        //
+        //                 subQuestion.level = userInfo[sub.behaviorTypeChild];
+        //
+        //                 return subQuestion;
+        //             });
+        //         } else if (question.behaviorType === 'Exercise') {
+        //             /**
+        //              * Create info to user exercise
+        //              */
+        //             question.sub_questions.map(sub => {
+        //                 subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
+        //             });
+        //         }
+        //
+        //         question.selectedValue = selectedValue;
+        //         question.sub_questions = subQuestionsTemp;
+        //     });
+        //
+        //     /**
+        //      * If we want to filter user info
+        //      * we gonna return this json
+        //      */
+        //     return res.json(
+        //         ResponseHandler(questionsArray, 'list of questions')
+        //     );
+        // }
 
 
         return res.json(
@@ -113,24 +114,15 @@ module.exports = {
         const allowedParameters = [
             'behaviorType',
             'behaviorTypeChild',
-            'answer',
-            'username'
+            'answer'
         ];
         const data = _.pick(req.allParams(), allowedParameters);
         const forSubQuestion = (data.behaviorTypeChild && data.behaviorTypeChild.trim() !== '');
 
 
-        /**
-         * check user info
-         */
-        if (!data.username || data.username === ''){
-            return res.badRequest(
-                ErrorHandler(0, 'ارسال username الزامی می‌باشد')
-            );
-        }
 
         let gatheredDate;
-        const userID = await User.getUserID(data.username);
+        const userID = await GetUserID(req, res).id || 0;
 
         /**
          * Check if user is valid
@@ -154,12 +146,13 @@ module.exports = {
          * This function will handle calculate insert or update
          * @param lastRecord
          */
-        const handleCouldAnswer = lastRecord => {
-            let couldAnswer;
+        const handleCouldAnswer = function(lastRecord ){
+            let couldAnswer = true,
+                lastAddTime;
             const currentDateTimeStamp = new Date().getTime();
-            if (lastRecord && lastRecord.id) {
-                const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
+            if (lastRecord && lastRecord.length > 0) {
+                lastAddTime = new Date(lastRecord.submitDate).getTime();
+                couldAnswer = ((currentDateTimeStamp - lastAddTime) > (24 * 3600));
             }
 
             return forceCouldAnswer ? forceCouldAnswer : couldAnswer;
