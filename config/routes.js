@@ -41,5 +41,10 @@ module.exports.routes = {
 
     // for socket
     'GET /joinRoom' : 'AppSocket.join',
-    'GET /appSocket': 'AppSocket.appChanged'
+    'GET /appSocket': 'AppSocket.appChanged',
+
+
+
+    // SMS Handler
+    'POST /sendOne' : 'SmsController.sendOne',
 };

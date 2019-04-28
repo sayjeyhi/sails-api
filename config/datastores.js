@@ -50,8 +50,8 @@ module.exports.datastores = {
          ***************************************************************************/
         // adapter: 'sails-mysql',
         // url: 'mysql://user:password@host:port/database',
-
         adapter: 'sails-mongo',
+        //url : 'mongodb://hackahealth_user:3589a371d5df01328782db8a78e8120c6b795c02@cluster0-wwxwy.mongodb.net/hackahealth'
         url    : 'mongodb://hackahealth_user:3589a371d5df01328782db8a78e8120c6b795c02@cluster0-shard-00-00-wwxwy.mongodb.net:27017,cluster0-shard-00-01-wwxwy.mongodb.net:27017,cluster0-shard-00-02-wwxwy.mongodb.net:27017/hackahealth?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true'
     }
 };
