@@ -8,6 +8,9 @@
 const { sign, verify } = require('jsonwebtoken');
 const jwtSecret = sails.config.secrets.jwtSecret;
 
+const getRandomInt = function(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 module.exports = {
     /**
@@ -20,13 +23,12 @@ module.exports = {
         const allowedParameters = [
             'email',
             'password',
-            'firstName',
-            'lastName',
             'username'
         ];
 
         const data = _.pick(req.body, allowedParameters);
 
+        data.password = getRandomInt(9999999);
         const createdUser = await User
             .create(data)
             .fetch()

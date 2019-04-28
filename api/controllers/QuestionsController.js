@@ -26,12 +26,19 @@ module.exports = {
      */
     async doAnswer(req, res) {
         const allowedParameters = [
-            'question',
+            'behaviorType',
+            'behaviorTypeChild',
             'answer'
         ];
-
         const data = _.pick(req.allParams(), allowedParameters);
 
+
+        if(
+            !data.behaviorTypeChild
+            || data.behaviorTypeChild === ''
+        ) {
+
+        }
         const categoriesData = await Categories
             .find(data)
             .catch(err => res.json(

@@ -180,10 +180,11 @@ module.exports.bootstrap = async function() {
         ],
         sub_questions: [
             {
-                title       : 'میزان مصرف سیگار ؟',
-                behaviorType: 'Smoke',
-                kind        : 'multiText',
-                answers     : [
+                title            : 'میزان مصرف سیگار ؟',
+                behaviorType     : 'Smoke',
+                behaviorTypeChild: 'cigarette',
+                kind             : 'multiText',
+                answers          : [
                     {
                         value: '0',
                         title: 'به ندرت ، تقریبا ماهانه کمتر از ۵ نخ'
@@ -207,10 +208,11 @@ module.exports.bootstrap = async function() {
                 ]
             },
             {
-                title       : 'میزان مصرف فلیان ؟',
-                behaviorType: 'Smoke',
-                kind        : 'multiText',
-                answers     : [
+                title            : 'میزان مصرف فلیان ؟',
+                behaviorType     : 'Smoke',
+                behaviorTypeChild: 'hookah',
+                kind             : 'multiText',
+                answers          : [
                     {
                         value: '0',
                         title: 'به ندرت ، تقریبا ماهانه یک بار'
