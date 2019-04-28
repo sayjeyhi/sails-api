@@ -6,27 +6,19 @@
 const jwtSecret = sails.config.secrets.jwtSecret;
 const { verify } = require('jsonwebtoken');
 
-const GetUserID = async(req, res) => {
+const GetUserID = async(req, res , fn) => {
     let token = req.headers.authorization;
     if (token) {
         if (token.startsWith('Bearer ')) {
             token = token.slice(7, token.length);
         }
-
         await verify(
             token,
             jwtSecret,
-            (err, data) => {
-                if (err) {
-                    return res ? res.badRequest(ErrorHandler(0, err)) : ErrorHandler(0, err);
-                }
-                return res ? res.json(
-                    ResponseHandler(data)
-                ) : data;
-            }
+            fn
         );
     } else {
-        return res ? res.send(ErrorHandler(1002)) : 'NoToken';
+        sails.log('NoToken supplied');
     }
 };
 

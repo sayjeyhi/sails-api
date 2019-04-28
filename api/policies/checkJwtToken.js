@@ -4,7 +4,6 @@ module.exports = async function(req, res, proceed) {
         if (token.startsWith('Bearer ')) {
             token = token.slice(7, token.length);
         }
-
         await JwtService.verify(token, err => {
             if (!err) {
                 proceed();

@@ -19,87 +19,6 @@ module.exports = {
             .find();
 
 
-        // /**
-        //  * Fn to check if sth has value
-        //  */
-        // const hasValue = (object, entity, field) => (object[entity] ? (object[entity][field]) : false);
-        //
-        //
-        // if (data.username) {
-        //     const questionsArray = dataGettered.map(question => {
-        //         let userInfo = {};
-        //
-        //         let selectedValue = '';
-        //         let subQuestionsTemp;
-        //         /**
-        //          * Work on alcohol drinks :)
-        //          */
-        //         if (question.behaviorType === 'Alcohol') {
-        //             selectedValue = hasValue(userInfo, 'UserAlcohol', 'doDrink') ? 'yes' : 'no';
-        //             subQuestionsTemp = question.sub_questions.map(async sub => {
-        //                 const subQuestion = { ...sub };
-        //                 userInfo = await UserAlcohol
-        //                     .findOne({
-        //                         user: data.username
-        //                     })
-        //                     .fetch()
-        //                     .catch(err =>
-        //                         res.badRequest(ErrorHandler(0, err.message)));
-        //
-        //                 subQuestion.level = userInfo[sub.behaviorTypeChild];
-        //
-        //                 return subQuestion;
-        //             });
-        //         } else if (question.behaviorType === 'Diet') {
-        //             /**
-        //              * Make questions of user diet
-        //              */
-        //             question.sub_questions.map(sub => {
-        //                 subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
-        //             });
-        //         } else if (question.behaviorType === 'Smoke') {
-        //             /**
-        //              * Create questions for user smoking
-        //              */
-        //
-        //             selectedValue = hasValue(userInfo, 'UserSmoke', 'doSmoke') ? 'yes' : 'no';
-        //             subQuestionsTemp = question.sub_questions.map(async sub => {
-        //                 const subQuestion = { ...sub };
-        //                 userInfo = await UserSmoke
-        //                     .findOne({
-        //                         user: data.username
-        //                     })
-        //                     .fetch()
-        //                     .catch(err =>
-        //                         res.badRequest(ErrorHandler(0, err.message)));
-        //
-        //                 subQuestion.level = userInfo[sub.behaviorTypeChild];
-        //
-        //                 return subQuestion;
-        //             });
-        //         } else if (question.behaviorType === 'Exercise') {
-        //             /**
-        //              * Create info to user exercise
-        //              */
-        //             question.sub_questions.map(sub => {
-        //                 subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
-        //             });
-        //         }
-        //
-        //         question.selectedValue = selectedValue;
-        //         question.sub_questions = subQuestionsTemp;
-        //     });
-        //
-        //     /**
-        //      * If we want to filter user info
-        //      * we gonna return this json
-        //      */
-        //     return res.json(
-        //         ResponseHandler(questionsArray, 'list of questions')
-        //     );
-        // }
-
-
         return res.json(
             ResponseHandler(dataGettered, 'list of questions')
         );
@@ -120,102 +39,108 @@ module.exports = {
         const forSubQuestion = (data.behaviorTypeChild && data.behaviorTypeChild.trim() !== '');
 
 
-
         let gatheredDate;
-        const userID = await GetUserID(req, res).id || 0;
-
-        /**
-         * Check if user is valid
-         */
-        if (!userID){
-            return res.badRequest(
-                ErrorHandler(0, ' username ارسال شده معتبر نمی‌باشد')
-            );
-        }
-        const dataToHandle = { user: userID };
-        let lastRecord, couldAnswer;
-
-
-        /**
-         * This flag will handle answering or updating answer in 24 hours
-         * @type {boolean}
-         */
-        const forceCouldAnswer = true;
-
-        /**
-         * This function will handle calculate insert or update
-         * @param lastRecord
-         */
-        const handleCouldAnswer = function(lastRecord ){
-            let couldAnswer = true,
-                lastAddTime;
-            const currentDateTimeStamp = new Date().getTime();
-            if (lastRecord && lastRecord.length > 0) {
-                lastAddTime = new Date(lastRecord.submitDate).getTime();
-                couldAnswer = ((currentDateTimeStamp - lastAddTime) > (24 * 3600));
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
             }
 
-            return forceCouldAnswer ? forceCouldAnswer : couldAnswer;
-        };
+            const userID = jwtData.id;
 
-        /**
-         * Check behavior type
-         */
-        switch (data.behaviorType){
-            case 'Alcohol':
-                dataToHandle.doDrink = true;
-                if (forSubQuestion) {
-                    dataToHandle[data.behaviorTypeChild] = data.answer;
+            /**
+             * Check if user is valid
+             */
+            if (!userID) {
+                return res.badRequest(
+                    ErrorHandler(0, ' username ارسال شده معتبر نمی‌باشد')
+                );
+            }
+            const dataToHandle = { user: userID };
+            let lastRecord, couldAnswer;
+
+
+            /**
+             * This flag will handle answering or updating answer in 24 hours
+             * @type {boolean}
+             */
+            const forceCouldAnswer = true;
+
+            /**
+             * This function will handle calculate insert or update
+             * @param lastRecord
+             */
+            const handleCouldAnswer = function(lastRecord) {
+                let couldAnswer = true,
+                    lastAddTime;
+                const currentDateTimeStamp = new Date().getTime();
+                if (lastRecord && lastRecord.length > 0) {
+                    lastAddTime = new Date(lastRecord.submitDate).getTime();
+                    couldAnswer = ((currentDateTimeStamp - lastAddTime) > (24 * 3600));
                 }
 
-                // get last user_alcohol
-                lastRecord = await UserAlcohol.getLastOne();
-                couldAnswer = handleCouldAnswer(lastRecord);
+                return forceCouldAnswer ? forceCouldAnswer : couldAnswer;
+            };
 
-                gatheredDate = await UserAlcohol.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
-                break;
-            case 'Smoke':
-                dataToHandle.isSmoking = true;
-                if (forSubQuestion) {
-                    dataToHandle[data.behaviorTypeChild] = data.answer;
-                }
+            /**
+             * Check behavior type
+             */
+            switch (data.behaviorType) {
+                case 'Alcohol':
+                    dataToHandle.doDrink = true;
+                    if (forSubQuestion) {
+                        dataToHandle[data.behaviorTypeChild] = data.answer;
+                    }
 
-                // get last user_smoke
-                lastRecord = await UserSmoke.getLastOne();
-                couldAnswer = handleCouldAnswer(lastRecord);
+                    // get last user_alcohol
+                    lastRecord = await UserAlcohol.getLastOne();
+                    couldAnswer = handleCouldAnswer(lastRecord);
 
+                    gatheredDate = await UserAlcohol.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
+                    break;
+                case 'Smoke':
+                    dataToHandle.isSmoking = true;
+                    if (forSubQuestion) {
+                        dataToHandle[data.behaviorTypeChild] = data.answer;
+                    }
 
-                gatheredDate = await UserSmoke.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
-                break;
-            case 'Diet':
-                const userSelectedCheckBoxes = data.answer.split(',');
-                dataToHandle.level = userSelectedCheckBoxes.length;
-                userSelectedCheckBoxes.forEach(selected => {
-                    dataToHandle[selected] = true;
-                });
-
-                // get last user_smoke
-                lastRecord = await UserDiet.getLastOne();
-                couldAnswer = handleCouldAnswer(lastRecord);
-
-
-                gatheredDate = await UserDiet.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
-                break;
-            case 'Exercise':
-                dataToHandle.level = data.answer;
-
-                // get last user_smoke
-                lastRecord = await UserExercise.getLastOne();
-                couldAnswer = handleCouldAnswer(lastRecord);
-
-                gatheredDate = await UserExercise.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
-                break;
-        }
+                    // get last user_smoke
+                    lastRecord = await UserSmoke.getLastOne();
+                    couldAnswer = handleCouldAnswer(lastRecord);
 
 
-        return res.json(
-            ResponseHandler(gatheredDate)
-        );
+                    gatheredDate = await UserSmoke.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
+                    break;
+                case 'Diet':
+                    const userSelectedCheckBoxes = data.answer.split(',');
+                    dataToHandle.level = userSelectedCheckBoxes.length;
+                    userSelectedCheckBoxes.forEach(selected => {
+                        dataToHandle[selected] = true;
+                    });
+
+                    // get last user_smoke
+                    lastRecord = await UserDiet.getLastOne();
+                    couldAnswer = handleCouldAnswer(lastRecord);
+
+
+                    gatheredDate = await UserDiet.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
+                    break;
+                case 'Exercise':
+                    dataToHandle.level = data.answer;
+
+                    // get last user_smoke
+                    lastRecord = await UserExercise.getLastOne();
+                    couldAnswer = handleCouldAnswer(lastRecord);
+
+                    gatheredDate = await UserExercise.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
+                    break;
+            }
+
+            return res.json(
+                ResponseHandler(gatheredDate)
+            );
+        });
     }
 
 };
