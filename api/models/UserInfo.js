@@ -13,11 +13,14 @@ module.exports = {
             type: 'string',
             isIn: ['male', 'female']
         },
-        personalCode: {
-            type    : 'string',
-            required: true
-        },
         birth_date: {
+            type      : 'string',
+            columnType: 'datetime'
+        },
+        height: {
+            type: 'string'
+        },
+        weight: {
             type      : 'string',
             columnType: 'datetime'
         },

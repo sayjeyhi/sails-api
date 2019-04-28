@@ -29,8 +29,8 @@ module.exports.routes = {
 
 
     // for history
-    'GET /questions'    : 'QuestionsController.getQuestions',
-    'POST /panel/answer': 'QuestionsController.doAnswer',
+    'GET /questions': 'QuestionsController.getQuestions',
+    'POST /doAnswer': 'QuestionsController.doAnswer',
 
 
     // for user
@@ -43,4 +43,3 @@ module.exports.routes = {
     'GET /joinRoom' : 'AppSocket.join',
     'GET /appSocket': 'AppSocket.appChanged'
 };
-

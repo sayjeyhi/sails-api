@@ -53,15 +53,13 @@ module.exports = {
      */
     async profile(req, res) {
         const allowedParameters = [
-            'username',
-            'id'
+            'username'
         ];
 
         const data = _.pick(req.allParams(), allowedParameters);
         const grabbedData = await User
             .findOne(data)
-            .populate('userBasicInfo')
-            .populate('userPersonal')
+            .populate('userInfo')
             .fetch()
             .catch(err =>
                 res.json(ErrorHandler(0, err.message))
@@ -70,6 +68,24 @@ module.exports = {
         return res.json(
             ResponseHandler(grabbedData)
         );
+    },
+    /**
+     * Update user info
+     * @param req
+     * @param res
+     * @returns {Promise.<void>}
+     */
+    async update(req, res){
+        const allowedParameters = [
+            'name',
+            'gender',
+            'weight',
+            'height',
+            'birth_date'
+        ];
+
+
+        const data = _.pick(req.allParams(), allowedParameters);
     },
     /**
      * Init user app

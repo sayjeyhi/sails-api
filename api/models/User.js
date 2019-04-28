@@ -25,21 +25,21 @@ module.exports = {
             type  : 'string',
             unique: true
         },
-        basicInfo: {
-            collection: 'userBasicInfo',
+        info: {
+            collection: 'userInfo',
             via       : 'user'
         },
-        personalInfo: {
-            collection: 'userPersonal',
-            via       : 'user'
-        },
-        // user information
+        // user folder info
         alcohol: {
             collection: 'userAlcohol',
             via       : 'user'
         },
         allergies: {
             collection: 'userAllergies',
+            via       : 'user'
+        },
+        diet: {
+            collection: 'userDiet',
             via       : 'user'
         },
         disease: {
@@ -56,10 +56,6 @@ module.exports = {
         },
         smoke: {
             collection: 'userSmoke',
-            via       : 'user'
-        },
-        diet: {
-            collection: 'userDiet',
             via       : 'user'
         }
     },
