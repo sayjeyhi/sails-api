@@ -57,9 +57,12 @@ module.exports = {
         smoke: {
             collection: 'userSmoke',
             via       : 'user'
+        },
+        diet: {
+            collection: 'userDiet',
+            via       : 'user'
         }
     },
-
     customToJSON() {
         return _.omit(this, ['password']);
     },

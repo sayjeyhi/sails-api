@@ -30,7 +30,9 @@ module.exports = {
         const createdUser = await User
             .create(data)
             .fetch()
-            .catch(err => res.json(ErrorHandler(0, err.message)));
+            .catch(err =>
+                res.json(ErrorHandler(0, err.message))
+            );
 
         const responseData = {
             user : createdUser,
@@ -39,6 +41,32 @@ module.exports = {
 
         return res.json(
             ResponseHandler(responseData)
+        );
+    },
+    /**
+     * Register new user
+     * @param req
+     * @param res
+     * @returns {Promise<*>}
+     */
+    async profile(req, res) {
+        const allowedParameters = [
+            'username',
+            'id'
+        ];
+
+        const data = _.pick(req.allParams(), allowedParameters);
+        const grabbedData = await User
+            .findOne(data)
+            .populate('userBasicInfo')
+            .populate('userPersonal')
+            .fetch()
+            .catch(err =>
+                res.json(ErrorHandler(0, err.message))
+            );
+
+        return res.json(
+            ResponseHandler(grabbedData)
         );
     },
     /**
@@ -64,7 +92,9 @@ module.exports = {
                     const grabbedUser = await User
                         .findOne({
                             id: data.id
-                        });
+                        })
+                        .populate('UserBasicInfo')
+                        .populate('UserPersonal');
 
                     res ? res.json(
                         ResponseHandler({ ...grabbedUser })

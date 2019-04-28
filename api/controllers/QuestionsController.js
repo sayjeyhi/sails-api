@@ -10,19 +10,12 @@ module.exports = {
      * @returns {Promise<*>}
      */
     async getQuestions(req, res) {
-        const allowedParameters = [
-            'categories'
-        ];
-
-        const data = _.pick(req.allParams(), allowedParameters);
-
         const dataGettered = await Questions
-            .find(data)
-            .populate('answers')
-            .catch(err => res.json(ErrorHandler(0, err.message)));
+            .find();
+
 
         return res.json(
-            ResponseHandler(dataGettered)
+            ResponseHandler(dataGettered , 'list of questions')
         );
     },
     /**
