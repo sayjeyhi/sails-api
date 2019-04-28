@@ -33,6 +33,8 @@ module.exports.routes = {
     'POST /doAnswer': 'QuestionsController.doAnswer',
 
 
+    'POST /analyzeData': 'MachineLearnController.analyze',
+
     // for socket
     'GET /joinRoom' : 'AppSocket.join',
     'GET /appSocket': 'AppSocket.appChanged',
