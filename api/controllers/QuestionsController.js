@@ -117,7 +117,6 @@ module.exports = {
             'username'
         ];
         const data = _.pick(req.allParams(), allowedParameters);
-        const modelCaller = `User${data.behaviorType}`;
         const forSubQuestion = (!data.behaviorTypeChild || data.behaviorTypeChild === '');
 
 
@@ -129,10 +128,6 @@ module.exports = {
                 ErrorHandler(0, 'ارسال username الزامی می‌باشد')
             );
         }
-
-        // const userInfo = User.find({
-        //     username: data.username
-        // }).populate(modelCaller);
 
         let gatheredDate;
         const dataToHandle = { user: userInfo.id };
@@ -178,7 +173,7 @@ module.exports = {
                     couldAnswer = ((lastAddTime - currentDateTimeStamp) > (24 * 3600));
                 }
 
-                gatheredDate = await this.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
+                gatheredDate = await this.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Diet':
                 const userSelectedCheckBoxes = data.answer.split(',');
@@ -186,9 +181,12 @@ module.exports = {
                 userSelectedCheckBoxes.forEach(selected => {
                     dataToHandle[selected] = true;
                 });
+
+                gatheredDate = await this.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Exercise':
                 dataToHandle.level = data.answer;
+                gatheredDate = await this.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
                 break;
         }
 
@@ -229,5 +227,96 @@ module.exports = {
         }
 
         return gatheredDate;
+    },
+
+    /**
+     * Insert or update user alcohol data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserSmoke(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = UserSmoke
+                .insert(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = UserSmoke
+                .updateOne(
+                    dataToHandle
+                )
+                .where({
+                    id: lastRecord.id
+                })
+                .fetch();
+        }
+
+        return gatheredDate;
+    },
+
+    /**
+     * Insert or update user diet data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserDiet(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = UserDiet
+                .insert(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = UserSmoke
+                .updateOne(
+                    dataToHandle
+                )
+                .where({
+                    id: lastRecord.id
+                })
+                .fetch();
+        }
+
+        return gatheredDate;
+    },
+
+    /**
+     * Insert or update user exercise data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserExercise(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = UserExercise
+                .insert(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = UserSmoke
+                .updateOne(
+                    dataToHandle
+                )
+                .where({
+                    id: lastRecord.id
+                })
+                .fetch();
+        }
+
+        return gatheredDate;
     }
+
 };
