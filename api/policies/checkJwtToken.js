@@ -9,7 +9,9 @@ module.exports = async function(req, res, proceed) {
             if (!err) {
                 proceed();
             } else {
-                return res.send(ErrorHandler(0, err.message));
+                return res.status(400).send(
+                    ErrorHandler(0, err.message)
+                );
             }
         });
     } else {

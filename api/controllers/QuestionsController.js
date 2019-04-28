@@ -43,7 +43,7 @@ module.exports = {
                             })
                             .fetch()
                             .catch(err =>
-                                res.json(ErrorHandler(0, err.message)));
+                                res.badRequest(ErrorHandler(0, err.message)));
 
                         subQuestion.level = userInfo[sub.behaviorTypeChild];
 
@@ -70,7 +70,7 @@ module.exports = {
                             })
                             .fetch()
                             .catch(err =>
-                                res.json(ErrorHandler(0, err.message)));
+                                res.status(400).json(ErrorHandler(0, err.message)));
 
                         subQuestion.level = userInfo[sub.behaviorTypeChild];
 
@@ -119,7 +119,6 @@ module.exports = {
         const data = _.pick(req.allParams(), allowedParameters);
         const forSubQuestion = (data.behaviorTypeChild && data.behaviorTypeChild.trim() !== '');
 
-        sails.log(data);
 
         /**
          * check user info
@@ -136,21 +135,35 @@ module.exports = {
         /**
          * Check if user is valid
          */
-        if(!userID){
+        if (!userID){
             return res.json(
                 ErrorHandler(0, ' username ارسال شده معتبر نمی‌باشد')
             );
         }
-        let dataToHandle = { user: userID };
+        const dataToHandle = { user: userID };
+        let lastRecord, couldAnswer;
 
 
         /**
          * This flag will handle answering or updating answer in 24 hours
          * @type {boolean}
          */
-        let couldAnswer = true;
-        let lastRecord;
-        const currentDateTimeStamp = new Date().getTime();
+        const forceCouldAnswer = true;
+
+        /**
+         * This function will handle calculate insert or update
+         * @param lastRecord
+         */
+        const handleCouldAnswer = lastRecord => {
+            let couldAnswer;
+            const currentDateTimeStamp = new Date().getTime();
+            if (lastRecord && lastRecord.id) {
+                const lastAddTime = new Date(lastRecord.submitDate).getTime();
+                couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
+            }
+
+            return forceCouldAnswer ? forceCouldAnswer : couldAnswer;
+        };
 
         /**
          * Check behavior type
@@ -164,10 +177,7 @@ module.exports = {
 
                 // get last user_alcohol
                 lastRecord = await UserAlcohol.getLastOne();
-                if (lastRecord && lastRecord.id) {
-                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
-                }
+                couldAnswer = handleCouldAnswer(lastRecord);
 
                 gatheredDate = await UserAlcohol.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
                 break;
@@ -179,14 +189,8 @@ module.exports = {
 
                 // get last user_smoke
                 lastRecord = await UserSmoke.getLastOne();
-                if (lastRecord && lastRecord.id) {
-                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
+                couldAnswer = handleCouldAnswer(lastRecord);
 
-                    sails.log({lastRecord , currentDateTimeStamp, lastAddTime ,couldAnswer});
-                }
-
-                sails.log({lastRecord , currentDateTimeStamp, couldAnswer});
 
                 gatheredDate = await UserSmoke.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
                 break;
@@ -199,10 +203,7 @@ module.exports = {
 
                 // get last user_smoke
                 lastRecord = await UserDiet.getLastOne();
-                if (lastRecord && lastRecord.length > 0 && lastRecord.id) {
-                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
-                }
+                couldAnswer = handleCouldAnswer(lastRecord);
 
 
                 gatheredDate = await UserDiet.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
@@ -212,10 +213,7 @@ module.exports = {
 
                 // get last user_smoke
                 lastRecord = await UserExercise.getLastOne();
-                if (lastRecord && lastRecord.length > 0 && lastRecord.id) {
-                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((currentDateTimeStamp - lastAddTime) > (24 * 3600));
-                }
+                couldAnswer = handleCouldAnswer(lastRecord);
 
                 gatheredDate = await UserExercise.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
                 break;
