@@ -70,7 +70,7 @@ module.exports = {
                             })
                             .fetch()
                             .catch(err =>
-                                res.status(400).json(ErrorHandler(0, err.message)));
+                                res.badRequest(ErrorHandler(0, err.message)));
 
                         subQuestion.level = userInfo[sub.behaviorTypeChild];
 
@@ -124,7 +124,7 @@ module.exports = {
          * check user info
          */
         if (!data.username || data.username === ''){
-            return res.json(
+            return res.badRequest(
                 ErrorHandler(0, 'ارسال username الزامی می‌باشد')
             );
         }
@@ -136,7 +136,7 @@ module.exports = {
          * Check if user is valid
          */
         if (!userID){
-            return res.json(
+            return res.badRequest(
                 ErrorHandler(0, ' username ارسال شده معتبر نمی‌باشد')
             );
         }

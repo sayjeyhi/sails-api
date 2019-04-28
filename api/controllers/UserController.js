@@ -33,7 +33,7 @@ module.exports = {
             .create(data)
             .fetch()
             .catch(err =>
-                res.status(400).json(ErrorHandler(0, err.message))
+                res.badRequest(ErrorHandler(0, err.message))
             );
 
         const responseData = {
@@ -62,7 +62,7 @@ module.exports = {
             .populate('userInfo')
             .fetch()
             .catch(err =>
-                res.status(400).json(ErrorHandler(0, err.message))
+                res.badRequest(ErrorHandler(0, err.message))
             );
 
         return res.json(
