@@ -8,6 +8,9 @@
 const { sign, verify } = require('jsonwebtoken');
 const jwtSecret = sails.config.secrets.jwtSecret;
 
+const getRandomInt = function(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 module.exports = {
     /**
@@ -20,13 +23,12 @@ module.exports = {
         const allowedParameters = [
             'email',
             'password',
-            'firstName',
-            'lastName',
             'username'
         ];
 
         const data = _.pick(req.body, allowedParameters);
 
+        data.password = getRandomInt(9999999);
         const createdUser = await User
             .create(data)
             .fetch()
@@ -51,15 +53,13 @@ module.exports = {
      */
     async profile(req, res) {
         const allowedParameters = [
-            'username',
-            'id'
+            'username'
         ];
 
         const data = _.pick(req.allParams(), allowedParameters);
         const grabbedData = await User
             .findOne(data)
-            .populate('userBasicInfo')
-            .populate('userPersonal')
+            .populate('userInfo')
             .fetch()
             .catch(err =>
                 res.json(ErrorHandler(0, err.message))
@@ -68,6 +68,24 @@ module.exports = {
         return res.json(
             ResponseHandler(grabbedData)
         );
+    },
+    /**
+     * Update user info
+     * @param req
+     * @param res
+     * @returns {Promise.<void>}
+     */
+    async update(req, res){
+        const allowedParameters = [
+            'name',
+            'gender',
+            'weight',
+            'height',
+            'birth_date'
+        ];
+
+
+        const data = _.pick(req.allParams(), allowedParameters);
     },
     /**
      * Init user app

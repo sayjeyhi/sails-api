@@ -6,23 +6,19 @@
  */
 module.exports = {
     attributes: {
-        isSmoking: {
-            type: 'boolean'
+        doSmoke: {
+            type: 'boolean',
+            defaultsTo: false
         },
         cigarette: {
             type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5'],
+            isIn: ['', '1', '2', '3', '4', '5']
         },
         hookah: {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },
-        pipe: {
-            type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5']
-        },
-        // سیگار برگ
-        cigar: {
+        other: {
             type: 'string',
             isIn: ['', '1', '2', '3', '4', '5']
         },

@@ -29,8 +29,8 @@ module.exports.routes = {
 
 
     // for history
-    'GET /questions'    : 'QuestionsController.getQuestions',
-    'POST /panel/answer': 'QuestionsController.doAnswer',
+    'GET /questions': 'QuestionsController.getQuestions',
+    'POST /doAnswer': 'QuestionsController.doAnswer',
 
 
     // for user
@@ -48,4 +48,3 @@ module.exports.routes = {
     // SMS Handler
     'POST /sendOne' : 'SmsController.sendOne',
 };
-

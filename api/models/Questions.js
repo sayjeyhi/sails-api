@@ -11,6 +11,10 @@ module.exports = {
             required: false,
             isIn    : ['Alcohol', 'Allergies', 'Diet', 'DiseaseHistory', 'Exercise', 'Medications', 'Smoke']
         },
+        behaviorTypeChild: {
+            type      : 'string',
+            defaultsTo: ''
+        },
         kind: {
             type    : 'string',
             required: true

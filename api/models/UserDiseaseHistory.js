@@ -10,8 +10,8 @@ module.exports = {
             type: 'string'
         },
         fromDate: {
-            type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5']
+            type      : 'string',
+            columnType: 'datetime'
         },
         user: {
             model: 'user'
