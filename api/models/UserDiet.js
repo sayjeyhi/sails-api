@@ -6,6 +6,10 @@
  */
 module.exports = {
     attributes: {
+        submitDate: {
+            type      : 'string',
+            columnType: 'datetime'
+        },
         vegetables: {
             type      : 'boolean',
             defaultsTo: false
@@ -25,5 +29,19 @@ module.exports = {
         user: {
             model: 'user'
         }
+    },
+    /**
+     * returns last row of this model
+     */
+    async getLastOne() {
+        const lastRow = await UserDiet
+            .find()
+            .sort('createdAt DESC')
+            .limit(1)
+            .catch(err => sails.log(
+                ErrorHandler(0, `We have error , ${err.message}`)
+            ));
+
+        return lastRow;
     }
 };

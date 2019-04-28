@@ -6,6 +6,10 @@
  */
 module.exports = {
     attributes: {
+        submitDate: {
+            type      : 'string',
+            columnType: 'datetime'
+        },
         doDrink: {
             type      : 'boolean',
             defaultsTo: false
@@ -22,9 +26,14 @@ module.exports = {
      * returns last row of this model
      */
     async getLastOne() {
-        await UserAlcohol
+        const lastRow = await UserAlcohol
             .find()
             .sort('createdAt DESC')
-            .limit(1);
+            .limit(1)
+            .catch(err => sails.log(
+                ErrorHandler(0, `We have error , ${err.message}`)
+            ));
+
+        return lastRow;
     }
 };
