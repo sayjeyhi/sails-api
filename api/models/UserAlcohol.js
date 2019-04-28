@@ -1,5 +1,5 @@
 /**
- * UserBasicInfo.js
+ * UserAlcohol.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -17,5 +17,14 @@ module.exports = {
         user: {
             model: 'user'
         }
+    },
+    /**
+     * returns last row of this model
+     */
+    async getLastOne() {
+        await UserAlcohol
+            .find()
+            .sort('createdAt DESC')
+            .limit(1);
     }
 };
