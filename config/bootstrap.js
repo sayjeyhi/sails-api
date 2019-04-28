@@ -33,6 +33,39 @@ module.exports.bootstrap = async function() {
     // remove and add questions
     await Questions.destroy({});
 
+
+    await Questions.create({
+        behaviorType: 'Diet',
+        kind        : 'checkbox',
+        title       : 'در رژیم غذایی روزانه خود کدام یک از موارد زیر را قرار داده اید؟',
+        answers     : [
+            {
+                value: 'vegetables',
+                title: 'سبزیجات تازه'
+            },
+            {
+                value: 'fruit',
+                title: 'میوه'
+            },
+            {
+                value: 'low_fat',
+                title: 'کم چرب'
+            },
+            {
+                value: 'low_salt',
+                title: 'کم نمک'
+            },
+            {
+                value: 'low_sugar',
+                title: 'کم شکر'
+            }
+        ],
+        sub_questions: []
+    }).fetch().then(out => {
+        console.log(`Questions created : ${out.title}`);
+    });
+
+
     await Questions.create({
         behaviorType: 'Alcohol',
         kind        : 'button',
@@ -111,37 +144,6 @@ module.exports.bootstrap = async function() {
             {
                 value: '5',
                 title: 'انجام ورزش حرفه ای'
-            }
-        ],
-        sub_questions: []
-    }).fetch().then(out => {
-        console.log(`Questions created : ${out.title}`);
-    });
-
-    await Questions.create({
-        behaviorType: 'Diet',
-        kind        : 'checkbox',
-        title       : 'در رژیم غذایی روزانه خود کدام یک از موارد زیر را قرار داده اید؟',
-        answers     : [
-            {
-                value: 'vegetables',
-                title: 'سبزیجات تازه'
-            },
-            {
-                value: 'fruit',
-                title: 'میوه'
-            },
-            {
-                value: 'low_fat',
-                title: 'کم چرب'
-            },
-            {
-                value: 'low_salt',
-                title: 'کم نمک'
-            },
-            {
-                value: 'low_sugar',
-                title: 'کم شکر'
             }
         ],
         sub_questions: []
