@@ -8,10 +8,10 @@ module.exports = {
         }
 
         /**
-         * We use karriz app id as room name
+         * We use app id as room name
          */
-        const karrizID = req.param('app');
-        if (!karrizID) {
+        const healthikaID = req.param('app');
+        if (!healthikaID) {
             return res.badRequest();
         }
 
@@ -19,7 +19,7 @@ module.exports = {
          * Create room
          * @type {string}
          */
-        const roomName = `karriz_${karrizID}`;
+        const roomName = `healthika_${healthikaID}`;
         if (typeof sails.rooms === 'undefined') {
             sails.rooms = {};
         }
@@ -59,10 +59,10 @@ module.exports = {
         }
 
         /**
-         * We use karriz app id as room name
+         * We use healthika app id as room name
          */
-        const karrizID = req.param('app');
-        if (!karrizID) {
+        const healthikaID = req.param('app');
+        if (!healthikaID) {
             return res.badRequest();
         }
 
@@ -70,7 +70,7 @@ module.exports = {
          * Create room
          * @type {string}
          */
-        const roomName = `karriz_${karrizID}`;
+        const roomName = `healthika_${healthikaID}`;
 
         console.log(`------We got change :${roomName}`);
 
@@ -84,7 +84,7 @@ module.exports = {
 
 
         // send the typing action to room
-        sails.sockets.broadcast(roomName, 'karriz_board_changed', {
+        sails.sockets.broadcast(roomName, 'healthika_board_changed', {
             json: appInfo.json
         });
 

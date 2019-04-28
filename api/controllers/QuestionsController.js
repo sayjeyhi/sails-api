@@ -150,6 +150,11 @@ module.exports = {
                     dataToHandle[behaviorTypeChild] = data.answer;
                 }
 
+                const lastRecord = UserAlcohol.getLastOne();
+                let lastAddTime;
+                if(lastRecord) {
+
+                }
                 gatteredDate = UserAlcohol.insert(
                     dataToHandle
                 );

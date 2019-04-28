@@ -31,6 +31,10 @@ module.exports = {
             type      : 'json',
             columnType: 'array'
         },
+        answers_weight: {
+            type      : 'json',
+            columnType: 'array'
+        },
         sub_questions: {
             type      : 'json',
             columnType: 'array'
