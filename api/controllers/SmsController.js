@@ -20,7 +20,7 @@ module.exports = {
                         .create(_result)
                         .fetch()
                         .catch( err => {
-                            res.status(400).json({
+                            res.badRequest({
                                 msg: 'sms is not sent...',
                                 err
                             })

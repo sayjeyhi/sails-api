@@ -9,12 +9,14 @@ module.exports = async function(req, res, proceed) {
             if (!err) {
                 proceed();
             } else {
-                return res.status(400).send(
+                return res.badRequest(
                     ErrorHandler(0, err.message)
                 );
             }
         });
     } else {
-        return res.send(ErrorHandler(1002));
+        return res.badRequest(
+            ErrorHandler(1002)
+        );
     }
 };
