@@ -43,5 +43,34 @@ module.exports = {
             ));
 
         return lastRow;
+    },
+
+    /**
+     * Insert or update user alcohol data
+     * @param isInsert
+     * @param dataToHandle
+     * @param lastRecord
+     * @returns {Promise.<void>}
+     */
+    async modifyUserSmoke(isInsert, dataToHandle, lastRecord) {
+        let gatheredDate;
+        if (isInsert) {
+            dataToHandle.submitDate = new Date();
+            gatheredDate = await UserSmoke
+                .create(
+                    dataToHandle
+                )
+                .fetch();
+        } else {
+            gatheredDate = await UserSmoke
+                .updateOne({
+                    id: lastRecord.id
+                })
+                .where(
+                    dataToHandle
+                );
+        }
+
+        return gatheredDate;
     }
 };

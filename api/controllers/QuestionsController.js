@@ -117,20 +117,31 @@ module.exports = {
             'username'
         ];
         const data = _.pick(req.allParams(), allowedParameters);
-        const forSubQuestion = (!data.behaviorTypeChild || data.behaviorTypeChild === '');
+        const forSubQuestion = (data.behaviorTypeChild && data.behaviorTypeChild.trim() !== '');
 
+        sails.log(data);
 
         /**
          * check user info
          */
-        if (!data.username){
+        if (!data.username || data.username === ''){
             return res.json(
                 ErrorHandler(0, 'ارسال username الزامی می‌باشد')
             );
         }
 
         let gatheredDate;
-        const dataToHandle = { user: userInfo.id };
+        const userID = await User.getUserID(data.username);
+
+        /**
+         * Check if user is valid
+         */
+        if(!userID){
+            return res.json(
+                ErrorHandler(0, ' username ارسال شده معتبر نمی‌باشد')
+            );
+        }
+        let dataToHandle = { user: userID };
 
 
         /**
@@ -148,32 +159,36 @@ module.exports = {
             case 'Alcohol':
                 dataToHandle.doDrink = true;
                 if (forSubQuestion) {
-                    dataToHandle[behaviorTypeChild] = data.answer;
+                    dataToHandle[data.behaviorTypeChild] = data.answer;
                 }
 
                 // get last user_alcohol
                 lastRecord = await UserAlcohol.getLastOne();
-                if (lastRecord) {
+                if (lastRecord && lastRecord.id) {
                     const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((lastAddTime - currentDateTimeStamp) > (24 * 3600));
+                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
                 }
 
-                gatheredDate = await this.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
+                gatheredDate = await UserAlcohol.modifyUserAlcohol(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Smoke':
                 dataToHandle.isSmoking = true;
                 if (forSubQuestion) {
-                    dataToHandle[behaviorTypeChild] = data.answer;
+                    dataToHandle[data.behaviorTypeChild] = data.answer;
                 }
 
                 // get last user_smoke
                 lastRecord = await UserSmoke.getLastOne();
-                if (lastRecord) {
+                if (lastRecord && lastRecord.id) {
                     const lastAddTime = new Date(lastRecord.submitDate).getTime();
-                    couldAnswer = ((lastAddTime - currentDateTimeStamp) > (24 * 3600));
+                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
+
+                    sails.log({lastRecord , currentDateTimeStamp, lastAddTime ,couldAnswer});
                 }
 
-                gatheredDate = await this.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
+                sails.log({lastRecord , currentDateTimeStamp, couldAnswer});
+
+                gatheredDate = await UserSmoke.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Diet':
                 const userSelectedCheckBoxes = data.answer.split(',');
@@ -182,11 +197,27 @@ module.exports = {
                     dataToHandle[selected] = true;
                 });
 
-                gatheredDate = await this.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
+                // get last user_smoke
+                lastRecord = await UserDiet.getLastOne();
+                if (lastRecord && lastRecord.length > 0 && lastRecord.id) {
+                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
+                    couldAnswer = ((currentDateTimeStamp - lastAddTime) < (24 * 3600));
+                }
+
+
+                gatheredDate = await UserDiet.modifyUserDiet(couldAnswer, dataToHandle, lastRecord);
                 break;
             case 'Exercise':
                 dataToHandle.level = data.answer;
-                gatheredDate = await this.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
+
+                // get last user_smoke
+                lastRecord = await UserExercise.getLastOne();
+                if (lastRecord && lastRecord.length > 0 && lastRecord.id) {
+                    const lastAddTime = new Date(lastRecord.submitDate).getTime();
+                    couldAnswer = ((currentDateTimeStamp - lastAddTime) > (24 * 3600));
+                }
+
+                gatheredDate = await UserExercise.modifyUserExercise(couldAnswer, dataToHandle, lastRecord);
                 break;
         }
 
@@ -194,129 +225,6 @@ module.exports = {
         return res.json(
             ResponseHandler(gatheredDate)
         );
-    },
-
-
-    // private methods
-
-    /**
-     * Insert or update user alcohol data
-     * @param isInsert
-     * @param dataToHandle
-     * @param lastRecord
-     * @returns {Promise.<void>}
-     */
-    async modifyUserAlcohol(isInsert, dataToHandle, lastRecord) {
-        let gatheredDate;
-        if (isInsert) {
-            dataToHandle.submitDate = new Date();
-            gatheredDate = UserAlcohol
-                .insert(
-                    dataToHandle
-                )
-                .fetch();
-        } else {
-            gatheredDate = UserAlcohol
-                .updateOne(
-                    dataToHandle
-                )
-                .where({
-                    id: lastRecord.id
-                })
-                .fetch();
-        }
-
-        return gatheredDate;
-    },
-
-    /**
-     * Insert or update user alcohol data
-     * @param isInsert
-     * @param dataToHandle
-     * @param lastRecord
-     * @returns {Promise.<void>}
-     */
-    async modifyUserSmoke(isInsert, dataToHandle, lastRecord) {
-        let gatheredDate;
-        if (isInsert) {
-            dataToHandle.submitDate = new Date();
-            gatheredDate = UserSmoke
-                .insert(
-                    dataToHandle
-                )
-                .fetch();
-        } else {
-            gatheredDate = UserSmoke
-                .updateOne(
-                    dataToHandle
-                )
-                .where({
-                    id: lastRecord.id
-                })
-                .fetch();
-        }
-
-        return gatheredDate;
-    },
-
-    /**
-     * Insert or update user diet data
-     * @param isInsert
-     * @param dataToHandle
-     * @param lastRecord
-     * @returns {Promise.<void>}
-     */
-    async modifyUserDiet(isInsert, dataToHandle, lastRecord) {
-        let gatheredDate;
-        if (isInsert) {
-            dataToHandle.submitDate = new Date();
-            gatheredDate = UserDiet
-                .insert(
-                    dataToHandle
-                )
-                .fetch();
-        } else {
-            gatheredDate = UserSmoke
-                .updateOne(
-                    dataToHandle
-                )
-                .where({
-                    id: lastRecord.id
-                })
-                .fetch();
-        }
-
-        return gatheredDate;
-    },
-
-    /**
-     * Insert or update user exercise data
-     * @param isInsert
-     * @param dataToHandle
-     * @param lastRecord
-     * @returns {Promise.<void>}
-     */
-    async modifyUserExercise(isInsert, dataToHandle, lastRecord) {
-        let gatheredDate;
-        if (isInsert) {
-            dataToHandle.submitDate = new Date();
-            gatheredDate = UserExercise
-                .insert(
-                    dataToHandle
-                )
-                .fetch();
-        } else {
-            gatheredDate = UserSmoke
-                .updateOne(
-                    dataToHandle
-                )
-                .where({
-                    id: lastRecord.id
-                })
-                .fetch();
-        }
-
-        return gatheredDate;
     }
 
 };

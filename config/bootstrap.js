@@ -152,7 +152,7 @@ module.exports.bootstrap = async function() {
 
     await Questions.create({
         behaviorType: 'Smoke',
-        kind        : 'checkbox',
+        kind        : 'radio',
         title       : 'آیا مصرف روزانه دخانیات دارید؟',
         answers     : [
             {
