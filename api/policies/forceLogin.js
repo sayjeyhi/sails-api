@@ -8,7 +8,9 @@
 module.exports = async function(req, res, next){
     if (typeof req.user !== 'object') {
         // return res.redirect("/login");
-        return res.json(ErrorHandler(1001));
+        return res.status(400).json(
+            ErrorHandler(1001)
+        );
     }
 
     next();

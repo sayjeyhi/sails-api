@@ -50,7 +50,6 @@ module.exports = {
     },
 
 
-
     /**
      * Insert or update user diet data
      * @param isInsert

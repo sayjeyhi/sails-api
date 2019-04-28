@@ -38,7 +38,6 @@ module.exports.routes = {
     'GET /appSocket': 'AppSocket.appChanged',
 
 
-
     // SMS Handler
     'POST /sendOne' : 'SmsController.sendOne',
 };

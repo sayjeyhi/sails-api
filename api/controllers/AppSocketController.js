@@ -78,7 +78,7 @@ module.exports = {
             .findOne({
                 id: req.param('app')
             })
-            .catch(err => res.json(
+            .catch(err => res.status(400).json(
                 ErrorHandler(0, err.message)
             ));
 
