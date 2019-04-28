@@ -9,6 +9,8 @@ Simple but powerful user behavior based system
 - sails project
 - MVC architecture
 - Machine learning base on bigML 
+- JWT authentication
+- Clean code
 
 ### Run locally
 

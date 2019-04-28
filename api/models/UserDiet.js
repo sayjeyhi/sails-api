@@ -65,15 +65,25 @@ module.exports = {
                 .create(
                     dataToHandle
                 )
-                .fetch();
+                .fetch()
+                .catch(err =>
+                    sails.log(`we have error adding UserDiet , ${err.message}`));
         } else {
+            delete dataToHandle.user;
+            if (typeof dataToHandle === 'undefined'){
+                return lastRecord;
+            }
             gatheredDate = await UserSmoke
                 .updateOne({
-                    id: lastRecord.id
+                    id: lastRecord[0].id
                 })
                 .set(
                     dataToHandle
-                );
+                )
+                .catch(err =>
+                    sails.log(`we have error updating UserDiet , ${err.message}`));
+
+            gatheredDate.updated = true;
         }
 
         return gatheredDate;

@@ -48,15 +48,22 @@ module.exports = {
                 .create(
                     dataToHandle
                 )
-                .fetch();
+                .fetch()
+                .catch(err =>
+                    sails.log(`we have error adding UserExercise , ${err.message}`));
         } else {
+            delete dataToHandle.user;
             gatheredDate = await UserSmoke
                 .updateOne({
-                    id: lastRecord.id
+                    id: lastRecord[0].id
                 })
-                .where(
+                .set(
                     dataToHandle
-                );
+                )
+                .catch(err =>
+                    sails.log(`we have error updating UserExercise , ${err.message}`));
+
+            gatheredDate.updated = true;
         }
 
         return gatheredDate;

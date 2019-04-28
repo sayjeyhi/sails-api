@@ -4,13 +4,17 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
-const { sign, verify } = require('jsonwebtoken');
+const { verify } = require('jsonwebtoken');
 const jwtSecret = sails.config.secrets.jwtSecret;
 
+/**
+ * Generates random numb
+ * @param max
+ * @returns {number}
+ */
 const getRandomInt = function(max) {
     return Math.floor(Math.random() * Math.floor(max));
-}
+};
 
 module.exports = {
     /**
@@ -25,16 +29,20 @@ module.exports = {
             'password',
             'username'
         ];
-
         const data = _.pick(req.body, allowedParameters);
+        let createdUser = await User.getUserWithUsername(data.username);
 
-        data.password = getRandomInt(9999999);
-        const createdUser = await User
-            .create(data)
-            .fetch()
-            .catch(err =>
-                res.badRequest(ErrorHandler(0, err.message))
-            );
+        if (!createdUser || createdUser.length === 0) {
+            // for now , we skipped login process
+            data.password = getRandomInt(9999999);
+            createdUser = await User
+                .create(data)
+                .fetch()
+                .catch(err =>
+                    res.badRequest(
+                        ErrorHandler(0, err.message)
+                    ));
+        }
 
         const responseData = {
             user : createdUser,
@@ -52,18 +60,25 @@ module.exports = {
      * @returns {Promise<*>}
      */
     async profile(req, res) {
-        const allowedParameters = [
-            'username'
-        ];
+        /**
+         * Get id from jwt
+         * @type {*|number}
+         */
+        const userID = await GetUserID(req, res).id || 0;
 
-        const data = _.pick(req.allParams(), allowedParameters);
+        /**
+         * Grab user info
+         */
         const grabbedData = await User
-            .findOne(data)
+            .findOne({
+                id: userID
+            })
             .populate('userInfo')
             .fetch()
             .catch(err =>
-                res.badRequest(ErrorHandler(0, err.message))
-            );
+                res.badRequest(
+                    ErrorHandler(0, err.message)
+                ));
 
         return res.json(
             ResponseHandler(grabbedData)
@@ -76,6 +91,12 @@ module.exports = {
      * @returns {Promise.<void>}
      */
     async update(req, res){
+        /**
+         * Get id from jwt
+         * @type {*|number}
+         */
+        const userID = await GetUserID(req, res).id || 0;
+
         const allowedParameters = [
             'name',
             'gender',

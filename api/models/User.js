@@ -66,18 +66,36 @@ module.exports = {
     /**
      * Get user id from username
      * @param username
+     * @returns {Promise.<Array>}
+     */
+    async getUserWithUsername(username) {
+        const userInfo = await User
+            .find({
+                username
+            })
+            .limit('1')
+            .sort('createdAt ASC')
+            .catch(err =>
+                sails.log(`we have little bug here , ${err.message}`));
+
+        return userInfo ? userInfo[0] : [];
+    },
+    /**
+     * Get user id from username
+     * @param username
      * @returns {Promise.<number>}
      */
     async getUserID(username) {
         const userInfo = await User
-            .findOne({
+            .find({
                 username
             })
-            .catch( err =>
-                sails.log('we have little bug here , ' + err.message)
-            );
+            .limit('1')
+            .sort('createdAt ASC')
+            .catch(err =>
+                sails.log(`we have little bug here , ${err.message}`));
 
-        return userInfo ? userInfo.id : 0;
+        return userInfo.length ? userInfo[0].id : 0;
     },
     /**
      * Omit passwords on user json
