@@ -17,11 +17,6 @@ module.exports.policies = {
      *                                                                          *
      ***************************************************************************/
     'panel': {
-        '*'                : ['forceLogin', 'checkJwtToken'],
-        'app/getMulti'     : ['forceLogin', 'checkJwtToken'],
-        'app/add'          : ['forceLogin', 'checkJwtToken'],
-        'user/uploadAvatar': ['forceLogin', 'checkJwtToken'],
-        'user/getUser'     : ['forceLogin', 'checkJwtToken'],
-        'user/update'      : ['forceLogin', 'checkJwtToken']
+        '*': []
     }
 };

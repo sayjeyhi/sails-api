@@ -20,21 +20,23 @@ module.exports = {
 
 
         /**
-         * Check if has value
+         * Fn to check if sth has value
          */
         const hasValue = (object, entity, field) => (object[entity] ? (object[entity][field]) : false);
 
         if (data.username) {
             const questionsArray = dataGettered.map(question => {
-
                 let userInfo = {};
 
                 let selectedValue = '';
                 let subQuestionsTemp;
+                /**
+                 * Work on alcohol drinks :)
+                 */
                 if (question.behaviorType === 'Alcohol') {
                     selectedValue = hasValue(userInfo, 'UserAlcohol', 'doDrink') ? 'yes' : 'no';
                     subQuestionsTemp = question.sub_questions.map(async sub => {
-                        const subQuestion = {...sub};
+                        const subQuestion = { ...sub };
                         userInfo = await UserAlcohol
                             .findOne({
                                 user: data.username
@@ -48,15 +50,36 @@ module.exports = {
                         return subQuestion;
                     });
                 } else if (question.behaviorType === 'Diet') {
+                    /**
+                     * Make questions of user diet
+                     */
                     question.sub_questions.map(sub => {
                         subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
                     });
                 } else if (question.behaviorType === 'Smoke') {
+                    /**
+                     * Create questions for user smoking
+                     */
+
                     selectedValue = hasValue(userInfo, 'UserSmoke', 'doSmoke') ? 'yes' : 'no';
-                    question.sub_questions.map(sub => {
-                        subQuestionsTemp = hasValue(userInfo, 'UserSmoke', sub.behaviorTypeChild);
+                    subQuestionsTemp = question.sub_questions.map(async sub => {
+                        const subQuestion = { ...sub };
+                        userInfo = await UserSmoke
+                            .findOne({
+                                user: data.username
+                            })
+                            .fetch()
+                            .catch(err =>
+                                res.json(ErrorHandler(0, err.message)));
+
+                        subQuestion.level = userInfo[sub.behaviorTypeChild];
+
+                        return subQuestion;
                     });
                 } else if (question.behaviorType === 'Exercise') {
+                    /**
+                     * Create info to user exercise
+                     */
                     question.sub_questions.map(sub => {
                         subQuestionsTemp = hasValue(userInfo, 'UserDiet', sub.behaviorTypeChild);
                     });
@@ -66,6 +89,10 @@ module.exports = {
                 question.sub_questions = subQuestionsTemp;
             });
 
+            /**
+             * If we want to filter user info
+             * we gonna return this json
+             */
             return res.json(
                 ResponseHandler(questionsArray, 'list of questions')
             );
@@ -123,7 +150,7 @@ module.exports = {
                     dataToHandle[behaviorTypeChild] = data.answer;
                 }
 
-                gatteredDate = UserAlcohol[operation](
+                gatteredDate = UserAlcohol.insert(
                     dataToHandle
                 );
                 break;
@@ -137,6 +164,9 @@ module.exports = {
                 );
                 break;
             case 'Diet':
+
+                break;
+            case 'Exercise':
 
                 break;
         }
