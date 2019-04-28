@@ -12,7 +12,6 @@ module.exports = {
         height: {
             type: 'string'
         },
-
         weight: {
             type      : 'string',
             columnType: 'datetime'

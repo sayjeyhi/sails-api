@@ -1,20 +1,17 @@
 /**
- * DoingDailyHistory.js
+ * UserBasicInfo.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 module.exports = {
     attributes: {
-        did: {
-            model: 'doings'
+        level: {
+            type: 'string',
+            isIn: ['', '1', '2', '3', '4', '5']
         },
-        date: {
-            type      : 'string',
-            columnType: 'datetime'
-        },
-        steps: {
-            model: 'steps'
+        user: {
+            model: 'user'
         }
     }
 };

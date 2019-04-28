@@ -1,17 +1,20 @@
 /**
- * Answers.js
+ * UserBasicInfo.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 module.exports = {
     attributes: {
-        title: {
-            type    : 'string',
-            required: true
+        name: {
+            type: 'string'
         },
-        question: {
-            model: 'questions'
+        fromDate: {
+            type: 'string',
+            isIn: ['', '1', '2', '3', '4', '5']
+        },
+        user: {
+            model: 'user'
         }
     }
 };

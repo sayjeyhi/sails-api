@@ -6,20 +6,30 @@
  */
 module.exports = {
     attributes: {
+        behaviorType: {
+            type    : 'string',
+            required: false,
+            isIn    : ['Alcohol', 'Allergies', 'Diet', 'DiseaseHistory', 'Exercise', 'Medications', 'Smoke']
+        },
+        kind: {
+            type    : 'string',
+            required: true
+        },
+        askSubAt: {
+            type      : 'string',
+            defaultsTo: 'yes'
+        },
         title: {
             type    : 'string',
             required: true
         },
-        inGroup: {
-            type: 'string'
-        },
-        // Add a reference to answers
         answers: {
-            collection: 'answers',
-            via       : 'question'
+            type      : 'json',
+            columnType: 'array'
         },
-        sub_question: {
-            type: 'string'
+        sub_questions: {
+            type      : 'json',
+            columnType: 'array'
         }
     }
 };
