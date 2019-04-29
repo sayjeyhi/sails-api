@@ -108,7 +108,7 @@ module.exports = {
                     gatheredDate = await UserSmoke.modifyUserSmoke(couldAnswer, dataToHandle, lastRecord);
                     break;
                 case 'Diet':
-                    const userSelectedCheckBoxes = data.answer.split(',');
+                    const userSelectedCheckBoxes = data.answer ? data.answer.split(',') : [];
                     dataToHandle.level = userSelectedCheckBoxes.length;
                     userSelectedCheckBoxes.forEach(selected => {
                         dataToHandle[selected] = true;

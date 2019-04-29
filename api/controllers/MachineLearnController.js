@@ -3,6 +3,7 @@
  * @type {fetch}
  */
 const fetch = require('node-fetch');
+// const fetch = require('sails-hook-cron');
 
 /**
  * Our bigML account info
@@ -65,48 +66,47 @@ module.exports = {
             return res.json(saveResource);
         });
 
+    },
+    /**
+     * Save field on ML tracker
+     * @param isInsert
+     * @param data
+     * @param where
+     * @returns {Promise.<*>}
+     */
+    async saveField(data){
+        const grabbedData = await MachineLearningTracker
+            .create(
+                data
+            )
+            .fetch()
+            .catch(err =>
+                sails.log(
+                    ErrorHandler(0, err.message)
+                ));
+
+
+        return grabbedData;
+    },
+
+    /**
+     * Save field on ML tracker
+     * @param data
+     * @returns {Promise.<*>}
+     */
+    async updateRow(data){
+        const grabbedData = await MachineLearningTracker
+            .update(where)
+            .set(data)
+            .catch(err =>
+                sails.log(
+                    ErrorHandler(0, err.message)
+                ));
+
+        return grabbedData;
     }
 };
 
-/**
- * Save field on ML tracker
- * @param isInsert
- * @param data
- * @param where
- * @returns {Promise.<*>}
- */
-const saveField = async data => {
-    const grabbedData = await MachineLearningTracker
-        .create(
-            data
-        )
-        .fetch()
-        .catch(err =>
-            sails.log(
-                ErrorHandler(0, err.message)
-            ));
-
-
-    return grabbedData;
-};
-
-/**
- * Save field on ML tracker
- * @param data
- * @returns {Promise.<*>}
- */
-const updateRow = async data => {
-    const grabbedData = await MachineLearningTracker
-        .update(where)
-        .set(data)
-        .catch(err =>
-            sails.log(
-                ErrorHandler(0, err.message)
-            ));
-
-
-    return grabbedData;
-};
 
 
 /**

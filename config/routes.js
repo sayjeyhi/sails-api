@@ -23,11 +23,12 @@ module.exports.routes = {
     'GET /csrfToken': { action: 'security/grant-csrf-token' },
 
     // Login/Register routes
-    'POST /login'   : 'AuthController.login',
-    'POST /register': 'UserController.register',
-    'POST /app_init': 'UserController.init',
-    'GET /profile'  : 'UserController.profile',
-    'POST /profile' : 'UserController.update',
+    'POST /login'      : 'AuthController.login',
+    'POST /register'   : 'UserController.register',
+    'POST /app_init'   : 'UserController.init',
+    'GET /profile'     : 'UserController.profile',
+    'POST /profile'    : 'UserController.update',
+    'GET /getChartInfo': 'UserController.getChartInfo',
 
 
     // for history
@@ -43,5 +44,5 @@ module.exports.routes = {
 
 
     // SMS Handler
-    'POST /sendOne' : 'SmsController.sendOne',
+    'POST /sendOne': 'SmsController.sendOne'
 };
