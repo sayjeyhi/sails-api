@@ -128,9 +128,9 @@ module.exports = {
                 })
                 .populate('info');
 
-            sails.log({userInfo})
+            sails.log({userInfo});
 
-            if (userInfo.length > 0) {
+            if (userInfo.info.length > 0) {
                 sails.log('update !!!!!!!!!!!');
                 updatedUser = await UserInfo
                     .update({

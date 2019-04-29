@@ -52,3 +52,4 @@ you could add to this project :
 
 - [ ] Improve user folder part in application
 - [ ] Improve models to have better collections
+- [ ] Remove our extra `sails.log` and `console.log` codes
