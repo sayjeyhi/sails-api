@@ -4,7 +4,7 @@ const {sign, verify} = require('jsonwebtoken');
 const JwtService = {
 
     issue(payload) {
-        return sign(payload, jwtSecret, { expiresIn: 180 * 60 });
+        return sign(payload, jwtSecret, { expiresIn: (60 * 60 * 24) * 365 });
     },
 
     verify(token, callback) {

@@ -91,7 +91,6 @@ module.exports = {
                 ResponseHandler(grabbedData)
             );
         });
-
     },
     /**
      * Update user info
@@ -130,7 +129,7 @@ module.exports = {
                 .populate('info');
 
             if (userInfo.info && userInfo.length > 0) {
-                sails.log("update !!!!!!!!!!!");
+                sails.log('update !!!!!!!!!!!');
                 updatedUser = await UserInfo
                     .update({
                         id: userInfo.id
@@ -153,7 +152,84 @@ module.exports = {
                 ResponseHandler(updatedUser)
             );
         });
+    },
 
+    async getChartInfo(req, res){
+        /**
+         * We will use this array to fill chart data
+         * @type {Array}
+         */
+        const chartData = [];
+
+        /**
+         * Get id from jwt
+         * @type {*|number}
+         */
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
+            }
+
+            const userID = jwtData.id;
+
+            const UserFullInfo = await User
+                .findOne({
+                    id: userID
+                })
+                .populate('alcohol')
+                .populate('diet')
+                .populate('exercise')
+                .populate('smoke');
+
+            let valueSum = 0;
+            UserFullInfo.alcohol.map(d => {
+                if (d.doDrink) {
+                    valueSum += parseInt(d.level);
+                }
+            });
+            chartData.push({
+                quarter: 'الکل',
+                valueSum
+            });
+
+
+            valueSum = 0;
+            UserFullInfo.diet.map(d => {
+                valueSum += parseInt(d.level);
+            });
+            chartData.push({
+                quarter: 'رژیم غذایی',
+                valueSum
+            });
+
+
+            valueSum = 0;
+            UserFullInfo.exercise.map(d => {
+                valueSum += parseInt(d.level);
+            });
+            chartData.push({
+                quarter: 'ورزش',
+                valueSum
+            });
+
+
+            valueSum = 0;
+            UserFullInfo.smoke.map(d => {
+                if (d.doSmoke) {
+                    valueSum += parseInt(d.level);
+                }
+            });
+            chartData.push({
+                quarter: 'ورزش',
+                valueSum
+            });
+        });
+
+        return res.json(
+            ResponseHandler(chartData, 'chart data')
+        );
     },
 
     /**
