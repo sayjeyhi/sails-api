@@ -92,9 +92,6 @@ module.exports = {
             );
         });
 
-        return res.badRequest(
-            ErrorHandler(0, 'Not valid token')
-        );
     },
     /**
      * Update user info
@@ -132,24 +129,22 @@ module.exports = {
                 })
                 .populate('info');
 
-            let updateUser;
-            if (userInfo.info) {
+            if (userInfo.info && userInfo.length > 0) {
+                sails.log("update !!!!!!!!!!!");
                 updatedUser = await UserInfo
                     .update({
                         id: userInfo.id
                     })
                     .set(data)
                     .catch(err =>
-                        res.badRequest(ErrorHandler(0, err.message))
-                    );
+                        res.badRequest(ErrorHandler(0, err.message)));
             } else {
                 data.user = userID;
                 updatedUser = await UserInfo
                     .create(data)
                     .fetch()
                     .catch(err =>
-                        res.badRequest(ErrorHandler(0, err.message))
-                    );
+                        res.badRequest(ErrorHandler(0, err.message)));
             }
 
             console.log(updatedUser);
@@ -159,7 +154,6 @@ module.exports = {
             );
         });
 
-        return res.badRequest(ErrorHandler(0, 'content'));
     },
 
     /**
