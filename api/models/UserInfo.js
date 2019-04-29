@@ -14,15 +14,13 @@ module.exports = {
             isIn: ['male', 'female']
         },
         age: {
-            type      : 'string',
-            columnType: 'datetime'
+            type: 'number'
         },
         height: {
             type: 'string'
         },
         weight: {
-            type      : 'string',
-            columnType: 'datetime'
+            type: 'number'
         },
         user: {
             model: 'user'

@@ -81,7 +81,7 @@ module.exports = {
                 .findOne({
                     id: userID
                 })
-                .populate('userInfo')
+                .populate('info')
                 .catch(err =>
                     res.badRequest(
                         ErrorHandler(0, err.message)
@@ -124,9 +124,10 @@ module.exports = {
             const data = _.pick(req.allParams(), allowedParameters);
 
 
-            const updatedUser = await User
+            sails.log({data});
+            const updatedUser = await UserInfo
                 .update({
-                    id: userID
+                    user: userID
                 })
                 .set(data)
                 .catch(err =>
