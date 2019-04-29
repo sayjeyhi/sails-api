@@ -16,15 +16,15 @@ module.exports = {
         },
         cigarette: {
             type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5']
+            isIn: ['', '0', '1', '2', '3', '4', '5']
         },
         hookah: {
             type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5']
+            isIn: ['', '0', '1', '2', '3', '4', '5']
         },
         others: {
             type: 'string',
-            isIn: ['', '1', '2', '3', '4', '5']
+            isIn: ['', '0', '1', '2', '3', '4', '5']
         },
         user: {
             model: 'user'
