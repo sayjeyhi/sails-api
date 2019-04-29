@@ -65,7 +65,6 @@ module.exports = {
             return res.json(saveResource);
         });
 
-        return res.badRequest('Not valid Token');
     }
 };
 
