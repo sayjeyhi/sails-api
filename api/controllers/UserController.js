@@ -134,7 +134,7 @@ module.exports = {
                 sails.log('update !!!!!!!!!!!');
                 updatedUser = await UserInfo
                     .update({
-                        id: userInfo[0].id
+                        id: userInfo.info[0].id
                     })
                     .set(data)
                     .catch(err =>
