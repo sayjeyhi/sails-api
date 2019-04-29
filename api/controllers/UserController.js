@@ -128,6 +128,8 @@ module.exports = {
                 })
                 .populate('info');
 
+            sails.log({userInfo})
+
             if (userInfo.info && userInfo.length > 0) {
                 sails.log('update !!!!!!!!!!!');
                 updatedUser = await UserInfo
@@ -191,7 +193,7 @@ module.exports = {
             });
             chartData.push({
                 quarter : 'الکل',
-                valueSum: (valueSum / (UserFullInfo.alcohol.length || 1))
+                valueSum: (valueSum / (UserFullInfo.alcohol.length || 1)) || 0
             });
 
 
@@ -201,7 +203,7 @@ module.exports = {
             });
             chartData.push({
                 quarter : 'رژیم غذایی',
-                valueSum: (valueSum / (UserFullInfo.diet.length || 1))
+                valueSum: (valueSum / (UserFullInfo.diet.length || 1)) || 0
             });
 
 
@@ -211,7 +213,7 @@ module.exports = {
             });
             chartData.push({
                 quarter : 'ورزش',
-                valueSum: (valueSum / (UserFullInfo.exercise.length || 1))
+                valueSum: (valueSum / (UserFullInfo.exercise.length || 1)) || 0
             });
 
 
@@ -223,8 +225,7 @@ module.exports = {
             });
             chartData.push({
                 quarter : 'ورزش',
-                valueSum: (valueSum / (UserFullInfo.smoke.length || 1))
-
+                valueSum: (valueSum / (UserFullInfo.smoke.length || 1)) || 0
             });
         });
 
