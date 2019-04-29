@@ -190,8 +190,8 @@ module.exports = {
                 }
             });
             chartData.push({
-                quarter: 'الکل',
-                valueSum
+                quarter : 'الکل',
+                valueSum: (valueSum / (UserFullInfo.alcohol.length || 1))
             });
 
 
@@ -200,8 +200,8 @@ module.exports = {
                 valueSum += parseInt(d.level);
             });
             chartData.push({
-                quarter: 'رژیم غذایی',
-                valueSum
+                quarter : 'رژیم غذایی',
+                valueSum: (valueSum / (UserFullInfo.diet.length || 1))
             });
 
 
@@ -210,8 +210,8 @@ module.exports = {
                 valueSum += parseInt(d.level);
             });
             chartData.push({
-                quarter: 'ورزش',
-                valueSum
+                quarter : 'ورزش',
+                valueSum: (valueSum / (UserFullInfo.exercise.length || 1))
             });
 
 
@@ -222,8 +222,9 @@ module.exports = {
                 }
             });
             chartData.push({
-                quarter: 'ورزش',
-                valueSum
+                quarter : 'ورزش',
+                valueSum: (valueSum / (UserFullInfo.smoke.length || 1))
+
             });
         });
 
