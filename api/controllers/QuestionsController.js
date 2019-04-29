@@ -11,13 +11,8 @@ module.exports = {
      * @returns {Promise<*>}
      */
     async getQuestions(req, res) {
-        const allowedParameters = [
-            'id'
-        ];
-        const data = _.pick(req.allParams(), allowedParameters);
         const dataGettered = await Questions
             .find();
-
 
         return res.json(
             ResponseHandler(dataGettered, 'list of questions')
