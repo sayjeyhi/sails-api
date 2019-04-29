@@ -61,6 +61,10 @@ module.exports = {
         smoke: {
             collection: 'userSmoke',
             via       : 'user'
+        },
+        machineLearning: {
+            collection: 'machineLearningTracker',
+            via       : 'user'
         }
     },
     /**

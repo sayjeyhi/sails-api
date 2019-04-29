@@ -1,4 +1,10 @@
 /**
+ * To call fetch api in node env
+ * @type {fetch}
+ */
+const fetch = require('node-fetch');
+
+/**
  * Our bigML account info
  * @type {{username: string, apikey: string, _auth: string}}
  */
@@ -7,8 +13,6 @@ const ML_INFO = {
     'apikey'  : 'd3565fba08a70168ee98504d7bb467263ef644eb',
     '_auth'   : 'username=jafar-rezaei;api_key=d3565fba08a70168ee98504d7bb467263ef644eb'
 };
-
-const fetch = require('node-fetch');
 
 
 /**
@@ -26,17 +30,66 @@ module.exports = {
     async analyze(req, res) {
         const userID = await GetUserID(req).id || 0;
 
-        sails.log({userID});
-        const createTracker = await generateSource('https://static.bigml.com/csv/diabetes.csv');
+        let trackBigML = {};
+
+        const sourceId = await generateSource('https://static.bigml.com/csv/diabetes.csv');
+        const dataSetId = await createDataSet(sourceId);
+        const modelId = await createModel(dataSetId);
+        const predict = await predict(modelId);
+
+
+        const saveResource = saveField(true, {
+            source: result.resource,
+            user: userID,
+            dataSetId,
+            modelId
+
+        });
+
+
         sails.log({
             createTracker
         });
     }
 };
 
+/**
+ * Save field on ML tracker
+ * @param isInsert
+ * @param data
+ * @param where
+ * @returns {Promise.<*>}
+ */
+const saveField = async(isInsert, data, where = {}) => {
+    let grabbedData;
+
+    if (isInsert) {
+        grabbedData = await MachineLearningTracker
+            .create(
+                data
+            )
+            .fetch()
+            .catch(err =>
+                sails.log(
+                    ErrorHandler(0, err.message)
+                ));
+    } else {
+        grabbedData = await MachineLearningTracker
+            .update(where)
+            .set(data)
+            .catch(err =>
+                sails.log(
+                    ErrorHandler(0, err.message)
+                ));
+    }
+
+    return grabbedData;
+};
+
+
 
 /**
- * send csvFile link with this param: `csvFileUrl`
+ * Send csvFile link with this param: `csvFileUrl`
  * @url 01 - http://ml.amdev.ir/generateSource
  * @param link
  * @returns {Promise.<void>}
@@ -51,19 +104,7 @@ const generateSource = async link => {
     });
     const result = await request.json();
 
-    sails.log({ result });
-
-    const createData = await MachineLearningTracker
-        .create({
-            sourceId: result.resource
-        })
-        .fetch()
-        .catch(err =>
-            sails.log(
-                ErrorHandler(0, err.message)
-            ));
-
-    return createData;
+    return result.resource;
 };
 
 
@@ -82,20 +123,7 @@ const createDataSet = async sourceId => {
     });
     const result = await request.json();
 
-    // Update record id to mongo
-    const _res = await MachineLearningTracker
-        .update(
-            { source: sourceId }
-        ).set({
-            dataset: result.resource
-        }).catch(err => {
-            sails.log(
-                ...err
-            );
-        });
-
-
-    dataSetId = result.resource;
+    return result.resource;
 };
 
 
@@ -118,7 +146,9 @@ const createModel = async datasetId => {
     // Update record id to mongo
     const _res = await MachineLearningTracker
         .update(
-            { resource: datasetId }
+            {
+                modelID: datasetId
+            }
         ).set({
             model: result.resource
         }).catch(err => {
@@ -134,7 +164,7 @@ const createModel = async datasetId => {
 
 
 /**
- * Put model id and get
+ * Put model id and get predict
  * @url 04 - http://ml.amdev.ir/predict
  * @param modelId
  * @returns {Promise.<void>}
