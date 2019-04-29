@@ -82,7 +82,6 @@ module.exports = {
                     id: userID
                 })
                 .populate('userInfo')
-                .fetch()
                 .catch(err =>
                     res.badRequest(
                         ErrorHandler(0, err.message)
@@ -141,6 +140,56 @@ module.exports = {
 
         return res.badRequest('Not valid token');
     },
+
+    /**
+     * Create csv to send date to bigML website
+     * @param req
+     * @param res
+     * @returns {Promise.<void>}
+     */
+    async createCSVInfo(req, res){
+        /**
+         * Get id from jwt
+         * @type {*|number}
+         */
+        let gatteredDate = [];
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
+            }
+
+            const userID = jwtData.id;
+            gatteredDate = await User
+                .find({
+                    id: userID
+                })
+                .populate('Alcohol')
+                .populate('Diet')
+                .populate('Exercise')
+                .populate('Smoke');
+                .catch(err =>
+                    res.badRequest(ErrorHandler(0 , err.message))
+
+                );
+        });
+
+        /**
+         * This fn will be act on data
+         * @param key
+         * @param value
+         */
+        const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
+        const header = Object.keys(items[0]);
+
+        let csv = items.map(row =>
+            header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+
+        csv.unshift(header.join(','));
+        csv = csv.join('\r\n');
+    },
+
     /**
      * Init user app
      * @param req

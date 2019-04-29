@@ -120,7 +120,7 @@ const generateSource = async link => {
     const request = await fetch(`https://bigml.io/source?${ML_INFO.auth}`, {
         method: 'POST',
         body  : JSON.stringify({
-            remote: link // 'https://static.bigml.com/csv/diabetes.csv'
+            remote: link
         }),
         headers: { 'content-type': 'application/json' }
     });
