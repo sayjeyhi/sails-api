@@ -64,25 +64,36 @@ module.exports = {
          * Get id from jwt
          * @type {*|number}
          */
-        const userID = await GetUserID(req, res).id || 0;
-
-        /**
-         * Grab user info
-         */
-        const grabbedData = await User
-            .findOne({
-                id: userID
-            })
-            .populate('userInfo')
-            .fetch()
-            .catch(err =>
-                res.badRequest(
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
                     ErrorHandler(0, err.message)
-                ));
+                );
+            }
 
-        return res.json(
-            ResponseHandler(grabbedData)
-        );
+            const userID = jwtData.id;
+
+
+            /**
+             * Grab user info
+             */
+            const grabbedData = await User
+                .findOne({
+                    id: userID
+                })
+                .populate('userInfo')
+                .fetch()
+                .catch(err =>
+                    res.badRequest(
+                        ErrorHandler(0, err.message)
+                    ));
+
+            return res.json(
+                ResponseHandler(grabbedData)
+            );
+        });
+
+        return res.badRequest('Not valid Token');
     },
     /**
      * Update user info
@@ -95,18 +106,40 @@ module.exports = {
          * Get id from jwt
          * @type {*|number}
          */
-        const userID = await GetUserID(req, res).id || 0;
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
+            }
 
-        const allowedParameters = [
-            'name',
-            'gender',
-            'weight',
-            'height',
-            'birth_date'
-        ];
+            const userID = jwtData.id;
+            const allowedParameters = [
+                'name',
+                'gender',
+                'weight',
+                'height',
+                'age'
+            ];
+
+            const data = _.pick(req.allParams(), allowedParameters);
 
 
-        const data = _.pick(req.allParams(), allowedParameters);
+            const updatedUser = await User
+                .update({
+                    id: userID
+                })
+                .set(data)
+                .catch(err =>
+                    res.badRequest(ErrorHandler(0, err.message)));
+
+
+            return res.json(
+                ResponseHandler(updatedUser)
+            );
+        });
+
+        return res.badRequest('Not valid token');
     },
     /**
      * Init user app

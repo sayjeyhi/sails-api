@@ -28,30 +28,44 @@ module.exports = {
      * @returns {Promise<*>}
      */
     async analyze(req, res) {
-        const userID = await GetUserID(req).id || 0;
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
+            }
 
-        const trackBigML = {};
+            const userID = jwtData.id;
 
-        const sourceId = await generateSource('https://static.bigml.com/csv/diabetes.csv');
-        const dataSetId = await createDataSet(sourceId);
-        const modelId = await createModel(dataSetId);
-        const predict = await makePredict(modelId);
+            const sourceId = await generateSource('https://static.bigml.com/csv/diabetes.csv');
+            const dataSetId = await createDataSet(sourceId);
+            const modelId = await createModel(dataSetId);
+            const predict = await makePredict(modelId);
+
+            sails.log({
+                source: sourceId,
+                user  : userID,
+                dataSetId,
+                modelId,
+                predict
+            });
+            const saveResource = await saveField({
+                source: sourceId,
+                user  : userID,
+                dataSetId,
+                modelId,
+                predict
+            });
 
 
-        const saveResource = saveField({
-            source: sourceId,
-            user  : userID,
-            dataSetId,
-            modelId,
-            predict
+            sails.log({
+                saveResource
+            });
+
+            return res.json(saveResource);
         });
 
-
-        sails.log({
-            saveResource
-        });
-
-        return res.json(saveResource);
+        return res.badRequest('Not valid Token');
     }
 };
 
@@ -150,6 +164,8 @@ const createModel = async datasetId => {
         headers: { 'content-type': 'application/json' }
     });
     const result = await request.json();
+
+    sails.log({model : result});
 
     return result.resource;
 };
