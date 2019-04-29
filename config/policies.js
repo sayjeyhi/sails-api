@@ -16,7 +16,7 @@ module.exports.policies = {
      * (`true` allows public access)                                            *
      *                                                                          *
      ***************************************************************************/
-    //'*'            : ['checkJwtToken'],
-    //'user/register': ['empty']
+    '*'            : ['checkJwtToken'],
+    'user/register': ['empty']
 
 };

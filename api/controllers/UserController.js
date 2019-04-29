@@ -92,7 +92,9 @@ module.exports = {
             );
         });
 
-        return res.badRequest('Not valid Token');
+        return res.badRequest(
+            ErrorHandler(0, 'Not valid token')
+        );
     },
     /**
      * Update user info
@@ -101,6 +103,16 @@ module.exports = {
      * @returns {Promise.<void>}
      */
     async update(req, res){
+        const allowedParameters = [
+            'name',
+            'gender',
+            'weight',
+            'height',
+            'age'
+        ];
+
+        const data = _.pick(req.allParams(), allowedParameters);
+
         /**
          * Get id from jwt
          * @type {*|number}
@@ -113,33 +125,41 @@ module.exports = {
             }
 
             const userID = jwtData.id;
-            const allowedParameters = [
-                'name',
-                'gender',
-                'weight',
-                'height',
-                'age'
-            ];
 
-            const data = _.pick(req.allParams(), allowedParameters);
-
-
-            sails.log({data});
-            const updatedUser = await UserInfo
-                .update({
-                    user: userID
+            const userInfo = await User
+                .findOne({
+                    id: userID
                 })
-                .set(data)
-                .catch(err =>
-                    res.badRequest(ErrorHandler(0, err.message)));
+                .populate('info');
 
+            let updateUser;
+            if (userInfo.info) {
+                updatedUser = await UserInfo
+                    .update({
+                        id: userInfo.id
+                    })
+                    .set(data)
+                    .catch(err =>
+                        res.badRequest(ErrorHandler(0, err.message))
+                    );
+            } else {
+                data.user = userID;
+                updatedUser = await UserInfo
+                    .create(data)
+                    .fetch()
+                    .catch(err =>
+                        res.badRequest(ErrorHandler(0, err.message))
+                    );
+            }
+
+            console.log(updatedUser);
 
             return res.json(
                 ResponseHandler(updatedUser)
             );
         });
 
-        return res.badRequest('Not valid token');
+        return res.badRequest(ErrorHandler(0, 'content'));
     },
 
     /**
@@ -171,9 +191,7 @@ module.exports = {
                 .populate('Exercise')
                 .populate('Smoke')
                 .catch(err =>
-                    res.badRequest(ErrorHandler(0 , err.message))
-
-                );
+                    res.badRequest(ErrorHandler(0, err.message)));
         });
 
         /**
@@ -181,7 +199,7 @@ module.exports = {
          * @param key
          * @param value
          */
-        const replacer = (key, value) => value === null ? '' : value ;// specify how you want to handle null values here
+        const replacer = (key, value) => value === null ? '' : value;// specify how you want to handle null values here
         const header = Object.keys(items[0]);
 
         let csv = items.map(row =>
