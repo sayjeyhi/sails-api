@@ -50,7 +50,7 @@ module.exports = {
                 modelId,
                 predict
             });
-            const saveResource = await saveField({
+            const saveResource = await MachineLearnController.saveField({
                 source: sourceId,
                 user  : userID,
                 dataSetId,
