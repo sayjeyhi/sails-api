@@ -168,7 +168,7 @@ module.exports = {
                 .populate('Alcohol')
                 .populate('Diet')
                 .populate('Exercise')
-                .populate('Smoke');
+                .populate('Smoke')
                 .catch(err =>
                     res.badRequest(ErrorHandler(0 , err.message))
 
