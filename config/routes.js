@@ -26,6 +26,8 @@ module.exports.routes = {
     'POST /login'   : 'AuthController.login',
     'POST /register': 'UserController.register',
     'POST /app_init': 'UserController.init',
+    'GET /profile'  : 'UserController.profile',
+    'POST /profile' : 'UserController.update',
 
 
     // for history

@@ -13,6 +13,13 @@ module.exports = {
         },
         modelId: {
             type: 'string'
+        },
+        predict: {
+            type      : 'json',
+            columnType: 'array'
+        },
+        user: {
+            model: 'user'
         }
     }
 };

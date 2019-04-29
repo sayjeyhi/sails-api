@@ -1,14 +1,18 @@
 /**
+ * To call fetch api in node env
+ * @type {fetch}
+ */
+const fetch = require('node-fetch');
+
+/**
  * Our bigML account info
- * @type {{username: string, apikey: string, _auth: string}}
+ * @type {{username: string, apikey: string, auth: string}}
  */
 const ML_INFO = {
     'username': 'jafar-rezaei',
     'apikey'  : 'd3565fba08a70168ee98504d7bb467263ef644eb',
-    '_auth'   : 'username=jafar-rezaei;api_key=d3565fba08a70168ee98504d7bb467263ef644eb'
+    'auth'    : 'username=jafar-rezaei;api_key=d3565fba08a70168ee98504d7bb467263ef644eb'
 };
-
-const fetch = require('node-fetch');
 
 
 /**
@@ -24,25 +28,96 @@ module.exports = {
      * @returns {Promise<*>}
      */
     async analyze(req, res) {
-        const userID = await GetUserID(req).id || 0;
+        await GetUserID(req, res, async(err, jwtData) => {
+            if (err) {
+                return res.badRequest(
+                    ErrorHandler(0, err.message)
+                );
+            }
 
-        sails.log({userID});
-        const createTracker = await generateSource('https://static.bigml.com/csv/diabetes.csv');
-        sails.log({
-            createTracker
+            const userID = jwtData.id;
+
+            const sourceId = await generateSource('https://static.bigml.com/csv/diabetes.csv');
+            const dataSetId = await createDataSet(sourceId);
+            const modelId = await createModel(dataSetId);
+            const predict = await makePredict(modelId);
+
+            sails.log({
+                source: sourceId,
+                user  : userID,
+                dataSetId,
+                modelId,
+                predict
+            });
+            const saveResource = await saveField({
+                source: sourceId,
+                user  : userID,
+                dataSetId,
+                modelId,
+                predict
+            });
+
+
+            sails.log({
+                saveResource
+            });
+
+            return res.json(saveResource);
         });
+
+        return res.badRequest('Not valid Token');
     }
+};
+
+/**
+ * Save field on ML tracker
+ * @param isInsert
+ * @param data
+ * @param where
+ * @returns {Promise.<*>}
+ */
+const saveField = async data => {
+    const grabbedData = await MachineLearningTracker
+        .create(
+            data
+        )
+        .fetch()
+        .catch(err =>
+            sails.log(
+                ErrorHandler(0, err.message)
+            ));
+
+
+    return grabbedData;
+};
+
+/**
+ * Save field on ML tracker
+ * @param data
+ * @returns {Promise.<*>}
+ */
+const updateRow = async data => {
+    const grabbedData = await MachineLearningTracker
+        .update(where)
+        .set(data)
+        .catch(err =>
+            sails.log(
+                ErrorHandler(0, err.message)
+            ));
+
+
+    return grabbedData;
 };
 
 
 /**
- * send csvFile link with this param: `csvFileUrl`
+ * Send csvFile link with this param: `csvFileUrl`
  * @url 01 - http://ml.amdev.ir/generateSource
  * @param link
  * @returns {Promise.<void>}
  */
 const generateSource = async link => {
-    const request = await fetch(`https://bigml.io/source?${ML_INFO._auth}`, {
+    const request = await fetch(`https://bigml.io/source?${ML_INFO.auth}`, {
         method: 'POST',
         body  : JSON.stringify({
             remote: link // 'https://static.bigml.com/csv/diabetes.csv'
@@ -51,19 +126,7 @@ const generateSource = async link => {
     });
     const result = await request.json();
 
-    sails.log({ result });
-
-    const createData = await MachineLearningTracker
-        .create({
-            sourceId: result.resource
-        })
-        .fetch()
-        .catch(err =>
-            sails.log(
-                ErrorHandler(0, err.message)
-            ));
-
-    return createData;
+    return result.resource;
 };
 
 
@@ -73,7 +136,7 @@ const generateSource = async link => {
  * @returns {Promise.<void>}
  */
 const createDataSet = async sourceId => {
-    const request = await fetch(`https://bigml.io/dataset?${_auth}`, {
+    const request = await fetch(`https://bigml.io/dataset?${ML_INFO.auth}`, {
         method: 'POST',
         body  : JSON.stringify({
             source: sourceId
@@ -82,20 +145,7 @@ const createDataSet = async sourceId => {
     });
     const result = await request.json();
 
-    // Update record id to mongo
-    const _res = await MachineLearningTracker
-        .update(
-            { source: sourceId }
-        ).set({
-            dataset: result.resource
-        }).catch(err => {
-            sails.log(
-                ...err
-            );
-        });
-
-
-    dataSetId = result.resource;
+    return result.resource;
 };
 
 
@@ -106,7 +156,7 @@ const createDataSet = async sourceId => {
  * @returns {Promise.<void>}
  */
 const createModel = async datasetId => {
-    const request = await fetch(`https://bigml.io/model?${_auth}`, {
+    const request = await fetch(`https://bigml.io/model?${ML_INFO.auth}`, {
         method: 'POST',
         body  : JSON.stringify({
             dataset: datasetId
@@ -115,32 +165,20 @@ const createModel = async datasetId => {
     });
     const result = await request.json();
 
-    // Update record id to mongo
-    const _res = await MachineLearningTracker
-        .update(
-            { resource: datasetId }
-        ).set({
-            model: result.resource
-        }).catch(err => {
-            sails.log(
-                ...err
-            );
-        });
+    sails.log({model : result});
 
-    res.json({
-        modelId: result.resource
-    });
+    return result.resource;
 };
 
 
 /**
- * Put model id and get
+ * Put model id and get predict
  * @url 04 - http://ml.amdev.ir/predict
  * @param modelId
  * @returns {Promise.<void>}
  */
-const predict = async modelId => {
-    const request = await fetch(`https://bigml.io/prediction?${_auth}`, {
+const makePredict = async modelId => {
+    const request = await fetch(`https://bigml.io/prediction?${ML_INFO.auth}`, {
         method: 'POST',
         body  : JSON.stringify({
             model     : modelId,
@@ -148,9 +186,7 @@ const predict = async modelId => {
         }),
         headers: { 'content-type': 'application/json' }
     });
-    const result = await request.json();
+    const predict = await request.json();
 
-    res.json({
-        ...result
-    });
+    return predict;
 };

@@ -9,11 +9,11 @@ module.exports = {
         name: {
             type: 'string'
         },
-        sex: {
+        gender: {
             type: 'string',
             isIn: ['male', 'female']
         },
-        birth_date: {
+        age: {
             type      : 'string',
             columnType: 'datetime'
         },
