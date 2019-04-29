@@ -37,7 +37,7 @@ module.exports = {
 
             const userID = jwtData.id;
 
-            const sourceId = await generateSource('https://static.bigml.com/csv/diabetes.csv');
+            const sourceId = await generateSource('http://hh.amdev.ir/diabetes.csv');
             const dataSetId = await createDataSet(sourceId);
             const modelId = await createModel(dataSetId);
             const predict = await makePredict(modelId);
@@ -125,6 +125,7 @@ const generateSource = async link => {
     });
     const result = await request.json();
 
+    sails.log('source res : ', result);
     return result.resource;
 };
 
@@ -144,6 +145,7 @@ const createDataSet = async sourceId => {
     });
     const result = await request.json();
 
+    sails.log('dataset res : ', result);
     return result.resource;
 };
 
@@ -164,7 +166,7 @@ const createModel = async datasetId => {
     });
     const result = await request.json();
 
-    sails.log({model : result});
+    sails.log('model res : ', result);
 
     return result.resource;
 };
@@ -187,5 +189,7 @@ const makePredict = async modelId => {
     });
     const predict = await request.json();
 
+
+    sails.log('predict res : ', predict);
     return predict;
 };
