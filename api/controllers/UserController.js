@@ -128,7 +128,7 @@ module.exports = {
                 })
                 .populate('info');
 
-            sails.log({userInfo});
+            sails.log({info : userInfo.info[0], data});
 
             if (userInfo.info.length > 0) {
                 sails.log('update !!!!!!!!!!!');
@@ -137,6 +137,7 @@ module.exports = {
                         id: userInfo.info[0].id
                     })
                     .set(data)
+                    .fetch()
                     .catch(err =>
                         res.badRequest(ErrorHandler(0, err.message)));
             } else {
