@@ -16,7 +16,7 @@
         "jalali-date": "^1.0.2",
         "javascript-time-ago": "^1.0.35",
         "jsonwebtoken": "^8.5.1",
-        "node-fetch": "^2.4.1",
+        "node-fetch": "^2.6.7",
         "nodemailer": "^5.1.1",
         "passport": "^0.4.0",
         "passport-local": "^1.0.0",
